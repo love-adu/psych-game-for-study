@@ -167,49 +167,54 @@ play:function(t,e){var o=s(e),a=o.map(function(t){return t.id}),r=a.slice(1),i={
 ;o.forEach(function(t){i[t.id]=t.name,c[t.id]={tone:t.tone,photo:!!t.photo,shape:t.shape||"face"}})
 ;var d=u(t)
 ;d.innerHTML="<style>"+n+'</style><div class="w"><p class="st" role="status" aria-live="polite"></p><div class="ct">'+l(o,!0,e.counts)+"</div></div>"
-;var h=d.querySelector(".ct"),f=d.querySelector(".st"),g=d.querySelector(".b"),x=!1,b=null,m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches
-;function v(t,e){f.textContent=t,f.className="st"+(e?" t":"")}function y(t){
+;var h=d.querySelector(".ct"),f=d.querySelector(".st"),b=d.querySelector(".b"),g=!1,x=null,v=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches
+;function m(t,e){f.textContent=t,f.className="st"+(e?" t":"")}function y(t){
 return new Promise(function(e){setTimeout(e,t)})}function w(t){
 var e=h.getBoundingClientRect(),o=function(t){
 var e=h.getBoundingClientRect(),o=d.querySelector('[data-id="'+t+'"] .p').getBoundingClientRect()
 ;return{x:o.left-e.left+o.width/2,y:o.top-e.top+o.height/2,r:o.width/2}
 }(t),n=e.width/2-o.x,a=e.height/2-o.y,r=Math.hypot(n,a)||1,i=o.r+16;return{x:o.x+n/r*i,y:o.y+a/r*i}}
-function _(t){g.style.left=t.x+"px",g.style.top=t.y+"px"}function M(t){
+function _(t){b.style.left=t.x+"px",b.style.top=t.y+"px"}function k(t){
 [].forEach.call(d.querySelectorAll(".s"),function(e){
-e.classList.toggle("h",e.getAttribute("data-id")===t)}),_(w(t))}function k(t,e,o){
+e.classList.toggle("h",e.getAttribute("data-id")===t)}),_(w(t))}function M(t,e,o){
 return new Promise(function(n){
-var a=w(t),r=w(e),i=m?0:Math.min(70,.22*Math.hypot(r.x-a.x,r.y-a.y)),s=m?Math.min(o,150):o,l=performance.now()
-;!function t(){if(x)return n()
+var a=w(t),r=w(e),i=v?0:Math.min(70,.22*Math.hypot(r.x-a.x,r.y-a.y)),s=v?Math.min(o,150):o,l=performance.now()
+;!function t(){if(g)return n()
 ;var e=Math.min(1,(performance.now()-l)/s),o=e<.5?2*e*e:1-Math.pow(-2*e+2,2)/2;_({x:a.x+(r.x-a.x)*o,
-y:a.y+(r.y-a.y)*o-Math.sin(Math.PI*e)*i}),e<1?requestAnimationFrame(t):n()}()})}function A(t){
+y:a.y+(r.y-a.y)*o-Math.sin(Math.PI*e)*i}),e<1?requestAnimationFrame(t):n()}()})}function E(t){
 h.classList.toggle("y",t),[].forEach.call(d.querySelectorAll("button.a"),function(e){e.disabled=!t})
-}d.addEventListener("click",function(t){var e=t.target.closest("[data-t]");if(e&&b&&!e.disabled){
-var o=b;b=null,o(e.getAttribute("data-t"))}});var E=async function(){
-var t,o,n,s=e.throws-e.toYou,l=[],u={},h={},f={},g=[],m=(new Date).toISOString()
+}d.addEventListener("click",function(t){var e=t.target.closest("[data-t]");if(e&&x&&!e.disabled){
+var o=x;x=null,o(e.getAttribute("data-t"))}});var A=async function(){
+var t,o,n,s=e.throws-e.toYou,l=[],u={},h={},f={},b=[],v=(new Date).toISOString(),w={},_=null,A=0,D=0
 ;for(t=0;t<e.toYou;t++)l.push("P");for(t=0;t<s-e.toYou;t++)l.push("N")
 ;for(t=l.length-1;t>0;t--)o=Math.floor(Math.random()*(t+1)),n=l[t],l[t]=l[o],l[o]=n
 ;a.forEach(function(t){u[t]=0,h[t]=0})
-;var w=r[Math.floor(Math.random()*r.length)],_=0,E=0,D=performance.now(),C=D;if(M(w),await y(500),
-x)return null;for(;;){var L;if("you"===w){if(v("You have the ball. Tap a player to throw it.",1),
-A(!0),L=await new Promise(function(t){b=t}),A(!1),x||!L)return null}else{if(_>=l.length)break
-;if(v(i[w]+" has the ball."),await y(Math.max(0,e.hold+(2*Math.random()-1)*e.vary)),x)return null
-;if("P"===l[_++])L="you";else L=p(r.filter(function(t){return t!==w}),u)}
-var S=performance.now(),j=w+">"+L;if(g.push({throw_number:++E,from_id:w,to_id:L,
-hold_ms:Math.round(S-C),elapsed_ms:Math.round(S-D)}),h[w]++,f[j]=(f[j]||0)+1,await k(w,L,e.flight),
-x)return null;u[L]++;var B=d.querySelector('[data-c="'+L+'"]');B&&(B.textContent=u[L]),w=L,
-C=performance.now(),M(w)}if(await y(400),x)return null;v("Done.");var F=0,q=0,P=0
+;var C=r[Math.floor(Math.random()*r.length)],L=0,S=0,j=performance.now(),B=j;if(k(C),await y(500),
+g)return null;for(;;){var F;if("you"===C){if(m("You have the ball. Tap a player to throw it.",1),
+E(!0),F=await new Promise(function(t){x=t}),E(!1),g||!F)return null
+;e.balance&&(F!==_||w[F]||(w[F]=1,A++),_=F)}else{if(L>=l.length)break;if(m(i[C]+" has the ball."),
+await y(Math.max(0,e.hold+(2*Math.random()-1)*e.vary)),g)return null;if("P"===l[L++])F="you";else{
+var q=r.filter(function(t){return t!==C}),P=q.filter(function(t){return!w[t]})
+;!P.length&&q.length&&q.some(function(t){return w[t]})&&D++,F=p(P.length?P:q,u)}}
+var z=performance.now(),T=C+">"+F;if(b.push({throw_number:++S,from_id:C,to_id:F,
+hold_ms:Math.round(z-B),elapsed_ms:Math.round(z-j),blocked:Object.keys(w).sort()}),h[C]++,
+f[T]=(f[T]||0)+1,await M(C,F,e.flight),g)return null;u[F]++,Object.keys(w).forEach(function(t){
+var e=Math.min.apply(null,r.filter(function(e){return e!==t}).map(function(t){return u[t]}))
+;u[t]<=e&&delete w[t]});var O=d.querySelector('[data-c="'+F+'"]');O&&(O.textContent=u[F]),C=F,
+B=performance.now(),k(C)}if(await y(400),g)return null;m("Done.");var Y=0,R=0,H=0
 ;return Object.keys(f).forEach(function(t){var e=t.split(">")
-;"you"===e[0]?P+=f[t]:"you"===e[1]?q+=f[t]:F+=f[t]}),{trial:e.n,name:e.name||"",npcs:r.length,
-total_throws:E,planned_to_you:e.toYou,received:u,passes:h,pairs:f,npc_to_npc:F,npc_to_you:q,
-you_to_npc:P,names:i,looks:c,started_at:m,throws:g}}();return E.stop=function(){x=!0,b&&(b(null),
-b=null)},E},pack:function(t,e){return{v:1,study:(e=e||{}).study||"",pid:e.pid||"",trial:t.trial,
-name:t.name||"",started_at:t.started_at,npcs:t.npcs,total:t.total_throws,
-planned_to_you:t.planned_to_you,received:t.received,passes:t.passes,pairs:t.pairs,
-npc_to_npc:t.npc_to_npc,npc_to_you:t.npc_to_you,you_to_npc:t.you_to_npc,names:t.names,looks:t.looks,
-log:t.throws.map(function(t){
-return[t.throw_number,c(t.from_id),c(t.to_id),t.hold_ms,t.elapsed_ms].join(",")}).join(";")}},
-pick:function(o,r){var s=null!=(r=r||{}).tone?r.tone:4,l=e.indexOf(r.shape)>=0?r.shape:"face",c=u(o)
-;function p(){
+;"you"===e[0]?H+=f[t]:"you"===e[1]?R+=f[t]:Y+=f[t]}),{trial:e.n,name:e.name||"",npcs:r.length,
+total_throws:S,planned_to_you:e.toYou,received:u,passes:h,pairs:f,npc_to_npc:Y,npc_to_you:R,
+you_to_npc:H,names:i,looks:c,started_at:v,throws:b,balance:!!e.balance,block_events:A,overrides:D}
+}();return A.stop=function(){g=!0,x&&(x(null),x=null)},A},pack:function(t,e){return{v:1,
+study:(e=e||{}).study||"",pid:e.pid||"",trial:t.trial,name:t.name||"",started_at:t.started_at,
+npcs:t.npcs,total:t.total_throws,planned_to_you:t.planned_to_you,received:t.received,
+passes:t.passes,pairs:t.pairs,npc_to_npc:t.npc_to_npc,npc_to_you:t.npc_to_you,
+you_to_npc:t.you_to_npc,names:t.names,looks:t.looks,balance:t.balance?1:0,
+block_events:t.block_events||0,overrides:t.overrides||0,log:t.throws.map(function(t){
+return[t.throw_number,c(t.from_id),c(t.to_id),t.hold_ms,t.elapsed_ms,(t.blocked||[]).map(c).join("")].join(",")
+}).join(";")}},pick:function(o,r){
+var s=null!=(r=r||{}).tone?r.tone:4,l=e.indexOf(r.shape)>=0?r.shape:"face",c=u(o);function p(){
 c.innerHTML="<style>"+n+a+'</style><div class="w"><p class="st">Choose how you’ll appear to the other players.</p><div class="pvbox a">'+i({
 tone:s,shape:l})+'</div><div class="op" role="group" aria-label="Shape">'+e.map(function(t){
 return'<button type="button" class="sb'+(t===l?" on":"")+'" data-sh="'+t+'" aria-pressed="'+(t===l)+'">'+t+"</button>"
@@ -277,7 +282,7 @@ function cleanSpec(s) {
   }
   var thr = clamp(s.throws, 1, MAX_THROWS);
   return { n: clamp(s.n, 1, MAX_TRIALS), name: typeof s.name === "string" ? s.name.slice(0, 40) : "", throws: thr, toYou: clamp(s.toYou, 0, Math.floor(thr / 2)),
-    hold: clamp(s.hold, 0, 10000), vary: clamp(s.vary, 0, 5000), flight: clamp(s.flight, 50, 3000), counts: !!s.counts,
+    hold: clamp(s.hold, 0, 10000), vary: clamp(s.vary, 0, 5000), flight: clamp(s.flight, 50, 3000), counts: !!s.counts, balance: !!s.balance,
     you: person(s.you), npcs: s.npcs.slice(0, MAX_NPC).map(person), study: typeof s.study === "string" ? s.study.slice(0, 60) : "" };
 }
 function parseHash() {
@@ -372,7 +377,7 @@ function normalizeCfg(c) {
     d.trials = c.trials.slice(0, MAX_TRIALS).map(function (t) {
       t = t || {};
       var throws = clamp(t.throws, 1, MAX_THROWS);
-      return { name: typeof t.name === "string" ? t.name.slice(0, 40) : "", npcs: clamp(t.npcs, MIN_NPC, MAX_NPC), throws: throws, toYou: clamp(t.toYou, 0, Math.floor(throws / 2)), look: cleanLook(t.look) };
+      return { name: typeof t.name === "string" ? t.name.slice(0, 40) : "", npcs: clamp(t.npcs, MIN_NPC, MAX_NPC), throws: throws, toYou: clamp(t.toYou, 0, Math.floor(throws / 2)), balance: !!t.balance, look: cleanLook(t.look) };
     });
   }
   if (c.pace) {
@@ -420,7 +425,7 @@ function trialSpec(ti) {
   function person(p) { var o = { name: p.name, tone: p.tone, shape: p.shape || "face" }; if (p.photo) o.photo = p.photo; return o; }
   for (var i = 0; i < tr.npcs; i++) npcs.push(person(npcLook(ti, i)));
   return {
-    n: ti + 1, name: tname(ti), study: cfg.qualtrics.study, throws: tr.throws, toYou: tr.toYou,
+    n: ti + 1, name: tname(ti), study: cfg.qualtrics.study, throws: tr.throws, toYou: tr.toYou, balance: !!tr.balance,
     hold: cfg.pace.holdMs, vary: cfg.pace.varMs, flight: cfg.pace.flightMs, counts: cfg.showCounts,
     you: person(cfg.participant), npcs: npcs
   };
@@ -458,7 +463,9 @@ function renderTrials() {
       '<div class="tr"><span class="tn">' + (i + 1) + '</span>' +
       cell(i, "npcs", MIN_NPC, MAX_NPC, t.npcs, "NPCs") +
       cell(i, "throws", 1, MAX_THROWS, t.throws, "total throws") +
-      cell(i, "toYou", 0, Math.floor(t.throws / 2), t.toYou, "throws to you") + '</div></div>';
+      cell(i, "toYou", 0, Math.floor(t.throws / 2), t.toYou, "throws to you") + '</div>' +
+      '<label class="check bal"><input type="checkbox" data-bal="' + i + '"' + (t.balance ? " checked" : "") + '> If the participant throws to the same NPC twice in a row, the other NPCs stop passing to that NPC until the others have caught up</label>' +
+      (t.balance && t.npcs < 3 ? '<p class="hint" style="margin:0 0 .25rem">This rule needs at least 3 NPCs to have any effect.</p>' : "") + '</div>';
   }).join("");
   var tc = $("#tc"); if (tc) tc.value = cfg.trials.length;
 }
@@ -608,7 +615,7 @@ function renderQUI() {
       '<li>Add one Text/Graphic question per trial, each on its own page. It helps to name each question after its trial. Type your instructions in the question text.</li>' +
       '<li>For each question, click JavaScript in the left panel under Question behavior (not the question text box), press Select All and Delete to clear everything there, including Qualtrics\u2019 starter lines, then paste that trial\u2019s code and save. Nothing else needs pasting.</li>' +
       '<li>To give different participants different trials, use a Randomizer in Survey Flow, as you normally would.</li>' + end;
-    lim.textContent = "Qualtrics allows up to 20,000 characters, and each trial\u2019s code is about 8,000. Uploaded photos add to that, so the sizes above show how much room is left.";
+    lim.textContent = "Qualtrics allows up to 20,000 characters, and each trial\u2019s code is about " + (Math.round(trialCode(0).length / 500) * 500).toLocaleString("en-US") + ". Uploaded photos add to that, so the sizes above show how much room is left.";
   }
   renderTrialCodes();
 }
@@ -659,7 +666,7 @@ function viewSetup() {
     '<section><h2>Send to Qualtrics</h2>' +
     '<p class="hint" style="margin-top:0">Each trial becomes its own question in Qualtrics, and the game appears right inside it. Participants never leave the survey, and their results are saved into the survey response.</p>' +
     '<fieldset class="modes"><legend>How should the game reach Qualtrics?</legend>' +
-    '<label class="check"><input type="radio" name="qmode" value="inline"' + (q.mode === "inline" ? " checked" : "") + '> Put the whole game in each question (about 8,000 characters, no hosting)</label>' +
+    '<label class="check"><input type="radio" name="qmode" value="inline"' + (q.mode === "inline" ? " checked" : "") + '> Put the whole game in each question (long code, no hosting needed)</label>' +
     '<label class="check"><input type="radio" name="qmode" value="hosted"' + (q.mode === "hosted" ? " checked" : "") + '> Load the game from a page I host (about 1,200 characters)</label></fieldset>' +
     '<div class="field" id="qHostBox"><label for="qHost">Public address of this page</label>' +
     '<input id="qHost" type="text" inputmode="url" autocomplete="off" placeholder="https://your-name.github.io/your-repo/" value="' + esc(q.hostUrl || defaultHost()) + '">' +
@@ -765,7 +772,8 @@ function addResult(R, res) {
     R.throws.push({
       session_id: R.sid, participant_id: R.pid, trial: res.trial, trial_name: res.name || "", throw_number: e.throw_number,
       from_id: e.from_id, from_name: res.names[e.from_id], to_id: e.to_id, to_name: res.names[e.to_id],
-      thrower: e.from_id === "you" ? "participant" : "npc", hold_ms: e.hold_ms, elapsed_ms: e.elapsed_ms
+      thrower: e.from_id === "you" ? "participant" : "npc", hold_ms: e.hold_ms, elapsed_ms: e.elapsed_ms,
+      blocked_npcs: (e.blocked || []).join("|")
     });
   });
 }
@@ -789,7 +797,7 @@ function exitRun() {
 }
 
 /* ---------- reports ---------- */
-var THROW_HEAD = ["session_id","participant_id","trial","trial_name","throw_number","from_id","from_name","to_id","to_name","thrower","hold_ms","elapsed_ms"];
+var THROW_HEAD = ["session_id","participant_id","trial","trial_name","throw_number","from_id","from_name","to_id","to_name","thrower","hold_ms","elapsed_ms","blocked_npcs"];
 var PAIR_HEAD = ["session_id","participant_id","trial","trial_name","from_id","from_name","to_id","to_name","count"];
 var PAIR_IDS = ["you", "npc1", "npc2", "npc3", "npc4", "npc5"];
 function csvId(id) { return id === "you" ? "participant" : id; }
@@ -809,6 +817,7 @@ function summaryHeader() {
   for (i = 1; i <= MAX_NPC; i++) head.push("npc" + i + "_name");
   head.push("participant_look");
   for (i = 1; i <= MAX_NPC; i++) head.push("npc" + i + "_look");
+  head.push("balance_rule", "block_events", "rule_overrides");
   return head;
 }
 function toneLabel(t, id) {
@@ -843,6 +852,7 @@ function summaryRows(o) {
     for (j = 1; j <= MAX_NPC; j++) r.push(t.names["npc" + j] || "");
     r.push(toneLabel(t, "you"));
     for (j = 1; j <= MAX_NPC; j++) r.push(toneLabel(t, "npc" + j));
+    r.push(t.balance === undefined ? "" : (t.balance ? "on" : "off"), nv(t, "block_events"), nv(t, "overrides"));
     return r;
   });
 }
@@ -990,7 +1000,7 @@ async function saveToDb(R) {
   var throwsDoc = {
     session_id: R.sid, participant_id: R.pid,
     cols: ["trial","throw_number","from_id","to_id","hold_ms","elapsed_ms"],
-    rows: R.throws.map(function (t) { return [t.trial, t.throw_number, t.from_id, t.to_id, t.hold_ms, t.elapsed_ms]; })
+    rows: R.throws.map(function (t) { return [t.trial, t.throw_number, t.from_id, t.to_id, t.hold_ms, t.elapsed_ms, t.blocked_npcs || ""]; })
   };
   async function write() {
     await db.doc("sessions/" + R.sid).set(sessionDoc);
@@ -1055,7 +1065,7 @@ function allThrowsCSV() {
     var td = dataCache.throws[x.session_id]; if (!td) return;
     td.rows.forEach(function (r) {
       var ts = x.trial_summary[r[0] - 1], names = ts.names, from = r[2], to = r[3];
-      rows.push([x.session_id, x.participant_id, r[0], ts.name || "", r[1], csvId(from), names[from], csvId(to), names[to], from === "you" ? "participant" : "npc", r[4], r[5]]);
+      rows.push([x.session_id, x.participant_id, r[0], ts.name || "", r[1], csvId(from), names[from], csvId(to), names[to], from === "you" ? "participant" : "npc", r[4], r[5], r[6] || ""]);
     });
   });
   return toCSV(rows);
@@ -1104,7 +1114,8 @@ function convertQualtrics(text, includePreviews) {
         if (!pid) pid = J.pid || "";
         if (!started) started = J.started_at || "";
         trials.push({ trial: J.trial, npcs: J.npcs, total_throws: J.total, planned_to_you: J.planned_to_you, received: J.received, passes: J.passes,
-          pairs: J.pairs, npc_to_npc: J.npc_to_npc, npc_to_you: J.npc_to_you, you_to_npc: J.you_to_npc, names: J.names, looks: J.looks, started_at: J.started_at, name: J.name || "", finished_at: J.finished_at || "" });
+          pairs: J.pairs, npc_to_npc: J.npc_to_npc, npc_to_you: J.npc_to_you, you_to_npc: J.you_to_npc, names: J.names, looks: J.looks, started_at: J.started_at, name: J.name || "", finished_at: J.finished_at || "",
+          balance: J.balance === undefined ? undefined : !!J.balance, block_events: J.block_events, overrides: J.overrides });
         log.push(J);
       });
       var o = { sid: resp || (study + "-" + r), pid: pid, startedAt: started, study: study, trials: trials };
@@ -1116,7 +1127,8 @@ function convertQualtrics(text, includePreviews) {
         entries.forEach(function (e) {
           var a = e.split(","), fi = parseInt(a[1], 10), ti = parseInt(a[2], 10);
           var fromId = fi === 0 ? "you" : "npc" + fi, toId = ti === 0 ? "you" : "npc" + ti;
-          thrRows.push([o.sid, pid, J.trial, J.name || "", a[0], csvId(fromId), J.names[fromId] || "", csvId(toId), J.names[toId] || "", fromId === "you" ? "participant" : "npc", a[3], a[4]]);
+          thrRows.push([o.sid, pid, J.trial, J.name || "", a[0], csvId(fromId), J.names[fromId] || "", csvId(toId), J.names[toId] || "", fromId === "you" ? "participant" : "npc", a[3], a[4],
+            (a[5] || "").split("").map(function (d) { return "npc" + d; }).join("|")]);
         });
         if (entries.length !== J.total) warn.push((resp || o.sid) + " trial " + J.trial + ": log has " + entries.length + " throws but " + J.total + " were recorded");
       });
@@ -1185,7 +1197,7 @@ document.addEventListener("click", function (e) {
     case "applyall": {
       var n = clamp($("#allNpcs").value, MIN_NPC, MAX_NPC), th = clamp($("#allThrows").value, 1, MAX_THROWS);
       var y = clamp($("#allYou").value, 0, Math.floor(th / 2));
-      cfg.trials = cfg.trials.map(function (t0) { return { name: t0.name || "", npcs: n, throws: th, toYou: y, look: t0.look || [] }; });
+      cfg.trials = cfg.trials.map(function (t0) { return { name: t0.name || "", npcs: n, throws: th, toYou: y, balance: !!t0.balance, look: t0.look || [] }; });
       $("#allNpcs").value = n; $("#allThrows").value = th; $("#allYou").value = y;
       renderTrials(); renderPlayers(); renderPreview(); persist(); note("Applied to all " + cfg.trials.length + " trials."); break;
     }
@@ -1243,6 +1255,7 @@ document.addEventListener("input", function (e) {
 
 document.addEventListener("change", function (e) {
   var t = e.target;
+  if (t.hasAttribute("data-bal")) { cfg.trials[parseInt(t.getAttribute("data-bal"), 10)].balance = t.checked; renderTrials(); persist(); return; }
   if (t.hasAttribute("data-tname")) { renderPlayers(); return; }
   if (t.hasAttribute("data-k")) {
     var i = parseInt(t.getAttribute("data-i"), 10), k = t.getAttribute("data-k"), tr = cfg.trials[i], msg = "";
