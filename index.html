@@ -52,6 +52,9 @@ h1{ font-size:1.75rem; line-height:1.15; letter-spacing:-.01em; margin:0 0 .4rem
 .tcode .pbtns{ margin-top:0; }
 .trialbox{ margin-bottom:1rem; }
 .trialbox .tname{ margin-bottom:.4rem; }
+.shapes{ display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.6rem; }
+.shb{ padding:.35rem .7rem; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font:inherit; font-size:.85rem; text-transform:capitalize; cursor:pointer; }
+.shb.on{ outline:2px solid var(--accent); outline-offset:1px; }
 fieldset.modes{ border:0; padding:0; margin:1rem 0; }
 fieldset.modes legend{ font-weight:500; padding:0; margin-bottom:.25rem; }
 /*@SETUP*/
@@ -137,7 +140,86 @@ textarea.raw{ font:12px/1.4 ui-monospace, Menlo, Consolas, monospace; min-height
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <noscript>This task needs JavaScript.</noscript>
 <script id="bt-runtime">
-var BT=function(){"use strict";var t=["#F6EDE4","#F3E7DB","#F7EAD0","#EADABA","#D7BD96","#A07E56","#825C43","#604134","#3A312A","#292420"],o=[".w{box-sizing:border-box;background:#fff;color:#18222E;border-radius:16px;padding:12px;font:16px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}",".w *{box-sizing:border-box}",".st{text-align:center;min-height:1.5em;margin:.2em 0 .6em;font-weight:600}.st.t{color:#2F5D8A;font-weight:700}",".ct{--a:clamp(56px,15vw,78px);position:relative;width:100%;max-width:600px;height:clamp(380px,118vw,520px);margin:0 auto;background:#DCE3E8;border-radius:20px;overflow:hidden}",".s{position:absolute;width:calc(var(--a) + 28px);transform:translate(-50%,calc(var(--a)/-2));display:flex;flex-direction:column;align-items:center;gap:6px}",".p{position:relative;width:var(--a);height:var(--a)}",".a{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;padding:0;border:0;background:#C5CDD6;font:inherit}",".a img,.a svg{display:block;width:100%;height:100%;object-fit:cover}","button.a{cursor:default}button.a:disabled{opacity:1}",".ct.y .n button.a{cursor:pointer;box-shadow:0 0 0 3px #2F5D8A}",".s.u .a{box-shadow:0 0 0 2px #18222E}.s.h .a{box-shadow:0 0 0 4px #E8A21A!important}",".m{font-size:.85rem;font-weight:500;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.s.u .m{font-weight:700}",".c{position:absolute;top:-4px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#18222E;color:#fff;font-size:.8rem;font-weight:700;line-height:22px;text-align:center}",".b{position:absolute;left:50%;top:52%;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;background:radial-gradient(circle at 35% 30%,#F8CB68,#E8A21A 58%,#BF7C0C);box-shadow:0 2px 4px rgba(0,0,0,.28)}","button.a:focus-visible{outline:3px solid #2F5D8A;outline-offset:2px}"].join("");function e(t){return String(t).replace(/[&<>"']/g,function(t){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[t]})}function n(o){if(o.photo)return'<img src="'+e(o.photo)+'" alt="">';var n=t[o.tone]||t[4];return'<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" fill="#C5CDD6"/><path d="M12 100c0-24 17-36 38-36s38 12 38 36z" fill="#4A5B6E"/><rect x="42" y="50" width="16" height="20" rx="7" fill="'+n+'"/><ellipse cx="50" cy="38" rx="17" ry="20" fill="'+n+'"/></svg>'}function a(t){var o=[{id:"you",name:t.you.name||"You",tone:t.you.tone,photo:t.you.photo}];return t.npcs.forEach(function(t,e){o.push({id:"npc"+(e+1),name:t.name||"Player "+(e+2),tone:t.tone,photo:t.photo})}),o}function r(t,o,a){var r=t.length-1;return t.map(function(t,i){var s=i?function(t,o){var e=Math.PI*(1-(t+.5)/o);return{x:50+39*Math.cos(e),y:50-33*Math.sin(e)}}(i-1,r):{x:50,y:83},l=o&&i;return'<div class="s '+(i?"n":"u")+'" data-id="'+t.id+'" style="left:'+s.x+"%;top:"+s.y+'%"><div class="p">'+(l?'<button type="button" class="a" disabled data-t="'+t.id+'" aria-label="Throw to '+e(t.name)+'">':'<div class="a">')+n(t)+(l?"</button>":"</div>")+(o&&a?'<span class="c" data-c="'+t.id+'">0</span>':"")+'</div><span class="m">'+e(t.name)+"</span></div>"}).join("")+'<i class="b"></i>'}function i(t){return t.shadowRoot||t.attachShadow({mode:"open"})}function s(t){return"you"===t?0:+t.slice(3)}return{TONES:t,avatar:n,preview:function(t,e){i(t).innerHTML="<style>"+o+'</style><div class="w"><div class="ct">'+r(a(e),!1,!1)+"</div></div>"},play:function(t,e){var n=a(e),s=n.map(function(t){return t.id}),l=s.slice(1),u={},c={};n.forEach(function(t){u[t.id]=t.name,c[t.id]={tone:t.tone,photo:!!t.photo}});var d=i(t);d.innerHTML="<style>"+o+'</style><div class="w"><p class="st" role="status" aria-live="polite"></p><div class="ct">'+r(n,!0,e.counts)+"</div></div>";var p=d.querySelector(".ct"),h=d.querySelector(".st"),f=d.querySelector(".b"),m=!1,v=null,x=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;function y(t,o){h.textContent=t,h.className="st"+(o?" t":"")}function g(t){return new Promise(function(o){setTimeout(o,t)})}function w(t){var o=p.getBoundingClientRect(),e=function(t){var o=p.getBoundingClientRect(),e=d.querySelector('[data-id="'+t+'"] .p').getBoundingClientRect();return{x:e.left-o.left+e.width/2,y:e.top-o.top+e.height/2,r:e.width/2}}(t),n=o.width/2-e.x,a=o.height/2-e.y,r=Math.hypot(n,a)||1,i=e.r+16;return{x:e.x+n/r*i,y:e.y+a/r*i}}function b(t){f.style.left=t.x+"px",f.style.top=t.y+"px"}function _(t){[].forEach.call(d.querySelectorAll(".s"),function(o){o.classList.toggle("h",o.getAttribute("data-id")===t)}),b(w(t))}function M(t,o,e){return new Promise(function(n){var a=w(t),r=w(o),i=x?0:Math.min(70,.22*Math.hypot(r.x-a.x,r.y-a.y)),s=x?Math.min(e,150):e,l=performance.now();!function t(){if(m)return n();var o=Math.min(1,(performance.now()-l)/s),e=o<.5?2*o*o:1-Math.pow(-2*o+2,2)/2;b({x:a.x+(r.x-a.x)*e,y:a.y+(r.y-a.y)*e-Math.sin(Math.PI*o)*i}),o<1?requestAnimationFrame(t):n()}()})}function E(t){p.classList.toggle("y",t),[].forEach.call(d.querySelectorAll("button.a"),function(o){o.disabled=!t})}d.addEventListener("click",function(t){var o=t.target.closest("[data-t]");if(o&&v&&!o.disabled){var e=v;v=null,e(o.getAttribute("data-t"))}});var A=async function(){var t,o,n,a=e.throws-e.toYou,r=[],i={},p={},h={},f=[],x=(new Date).toISOString();for(t=0;t<e.toYou;t++)r.push("P");for(t=0;t<a-e.toYou;t++)r.push("N");for(t=r.length-1;t>0;t--)o=Math.floor(Math.random()*(t+1)),n=r[t],r[t]=r[o],r[o]=n;s.forEach(function(t){i[t]=0,p[t]=0});var w=l[Math.floor(Math.random()*l.length)],b=0,A=0,D=performance.now(),k=D;if(_(w),await g(500),m)return null;for(;;){var C;if("you"===w){if(y("You have the ball. Tap a player to throw it.",1),E(!0),C=await new Promise(function(t){v=t}),E(!1),m||!C)return null}else{if(b>=r.length)break;if(y(u[w]+" has the ball."),await g(Math.max(0,e.hold+(2*Math.random()-1)*e.vary)),m)return null;if("P"===r[b++])C="you";else{var S=l.filter(function(t){return t!==w});C=S[Math.floor(Math.random()*S.length)]}}var B=performance.now(),q=w+">"+C;if(f.push({throw_number:++A,from_id:w,to_id:C,hold_ms:Math.round(B-k),elapsed_ms:Math.round(B-D)}),p[w]++,h[q]=(h[q]||0)+1,await M(w,C,e.flight),m)return null;i[C]++;var F=d.querySelector('[data-c="'+C+'"]');F&&(F.textContent=i[C]),w=C,k=performance.now(),_(w)}if(await g(400),m)return null;y("Done.");var P=0,T=0,j=0;return Object.keys(h).forEach(function(t){var o=t.split(">");"you"===o[0]?j+=h[t]:"you"===o[1]?T+=h[t]:P+=h[t]}),{trial:e.n,name:e.name||"",npcs:l.length,total_throws:A,planned_to_you:e.toYou,received:i,passes:p,pairs:h,npc_to_npc:P,npc_to_you:T,you_to_npc:j,names:u,looks:c,started_at:x,throws:f}}();return A.stop=function(){m=!0,v&&(v(null),v=null)},A},pack:function(t,o){return{v:1,study:(o=o||{}).study||"",pid:o.pid||"",trial:t.trial,name:t.name||"",started_at:t.started_at,npcs:t.npcs,total:t.total_throws,planned_to_you:t.planned_to_you,received:t.received,passes:t.passes,pairs:t.pairs,npc_to_npc:t.npc_to_npc,npc_to_you:t.npc_to_you,you_to_npc:t.you_to_npc,names:t.names,looks:t.looks,log:t.throws.map(function(t){return[t.throw_number,s(t.from_id),s(t.to_id),t.hold_ms,t.elapsed_ms].join(",")}).join(";")}}}}();
+var BT=function(){"use strict"
+;var t=["#F6EDE4","#F3E7DB","#F7EAD0","#EADABA","#D7BD96","#A07E56","#825C43","#604134","#3A312A","#292420"],e=["face","circle","square","triangle","star"],o={
+circle:'<circle cx="50" cy="50" r="38"/>',
+square:'<rect x="14" y="14" width="72" height="72" rx="10"/>',
+triangle:'<path d="M50 10 L92 86 L8 86 Z" stroke-linejoin="round"/>',
+star:'<path d="M50 6 L61 38 L95 38 L67 58 L78 92 L50 71 L22 92 L33 58 L5 38 L39 38 Z" stroke-linejoin="round"/>'
+},n=[".w{box-sizing:border-box;background:#fff;color:#18222E;border-radius:16px;padding:12px;font:16px/1.4 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}",".w *{box-sizing:border-box}",".st{text-align:center;min-height:1.5em;margin:.2em 0 .6em;font-weight:600}.st.t{color:#2F5D8A;font-weight:700}",".ct{--a:clamp(56px,15vw,78px);position:relative;width:100%;max-width:600px;height:clamp(380px,118vw,520px);margin:0 auto;background:#DCE3E8;border-radius:20px;overflow:hidden}",".s{position:absolute;width:calc(var(--a) + 28px);transform:translate(-50%,calc(var(--a)/-2));display:flex;flex-direction:column;align-items:center;gap:6px}",".p{position:relative;width:var(--a);height:var(--a)}",".a{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;padding:0;border:0;background:#C5CDD6;font:inherit}",".a img,.a svg{display:block;width:100%;height:100%;object-fit:cover}","button.a{cursor:default}button.a:disabled{opacity:1}",".ct.y .n button.a{cursor:pointer;box-shadow:0 0 0 3px #2F5D8A}",".s.u .a{box-shadow:0 0 0 2px #18222E}.s.h .a{box-shadow:0 0 0 4px #E8A21A!important}",".m{font-size:.85rem;font-weight:500;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.s.u .m{font-weight:700}",".c{position:absolute;top:-4px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#18222E;color:#fff;font-size:.8rem;font-weight:700;line-height:22px;text-align:center}",".b{position:absolute;left:50%;top:52%;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;background:radial-gradient(circle at 35% 30%,#F8CB68,#E8A21A 58%,#BF7C0C);box-shadow:0 2px 4px rgba(0,0,0,.28)}","button.a:focus-visible{outline:3px solid #2F5D8A;outline-offset:2px}"].join(""),a=[".pvbox{width:96px;height:96px;margin:0 auto 12px;border-radius:50%;overflow:hidden;background:#C5CDD6}",".op{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 14px}",".sb{padding:7px 12px;border-radius:8px;border:1px solid #C9D2DA;background:#fff;color:#18222E;font:inherit;font-size:.85rem;text-transform:capitalize;cursor:pointer}",".sb.on{outline:2px solid #2F5D8A;outline-offset:1px}",".tb{width:30px;height:30px;border-radius:50%;border:0;padding:0;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}",".tb.on{outline:2px solid #2F5D8A;outline-offset:2px}",".gob{display:block;margin:0 auto;padding:10px 24px;border-radius:8px;border:0;background:#2F5D8A;color:#fff;font:inherit;font-size:1rem;font-weight:600;cursor:pointer}",".gob:focus-visible{outline:3px solid #18222E;outline-offset:2px}"].join("")
+;function r(t){return String(t).replace(/[&<>"']/g,function(t){return{"&":"&amp;","<":"&lt;",
+">":"&gt;",'"':"&quot;","'":"&#39;"}[t]})}function i(e){
+if(e.photo)return'<img src="'+r(e.photo)+'" alt="">';var n=t[e.tone]||t[4]
+;return e.shape&&"face"!==e.shape&&o[e.shape]?'<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" fill="#C5CDD6"/><g fill="'+n+'" stroke="#18222E" stroke-width="2">'+o[e.shape]+"</g></svg>":'<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" fill="#C5CDD6"/><path d="M12 100c0-24 17-36 38-36s38 12 38 36z" fill="#4A5B6E"/><rect x="42" y="50" width="16" height="20" rx="7" fill="'+n+'"/><ellipse cx="50" cy="38" rx="17" ry="20" fill="'+n+'"/></svg>'
+}function s(t){var e=[{id:"you",name:t.you.name||"You",tone:t.you.tone,photo:t.you.photo,
+shape:t.you.shape}];return t.npcs.forEach(function(t,o){e.push({id:"npc"+(o+1),
+name:t.name||"Player "+(o+2),tone:t.tone,photo:t.photo,shape:t.shape})}),e}function l(t,e,o){
+var n=t.length-1;return t.map(function(t,a){var s=a?function(t,e){var o=Math.PI*(1-(t+.5)/e);return{
+x:50+39*Math.cos(o),y:50-33*Math.sin(o)}}(a-1,n):{x:50,y:83},l=e&&a
+;return'<div class="s '+(a?"n":"u")+'" data-id="'+t.id+'" style="left:'+s.x+"%;top:"+s.y+'%"><div class="p">'+(l?'<button type="button" class="a" disabled data-t="'+t.id+'" aria-label="Throw to '+r(t.name)+'">':'<div class="a">')+i(t)+(l?"</button>":"</div>")+(e&&o?'<span class="c" data-c="'+t.id+'">0</span>':"")+'</div><span class="m">'+r(t.name)+"</span></div>"
+}).join("")+'<i class="b"></i>'}function u(t){return t.shadowRoot||t.attachShadow({mode:"open"})}
+function c(t){return"you"===t?0:+t.slice(3)}function p(t,e){
+var o=Math.min.apply(null,t.map(function(t){return e[t]})),n=t.filter(function(t){return e[t]===o
+}),a=Math.random()<.85?n:t;return a[Math.floor(Math.random()*a.length)]}return{TONES:t,SHAPES:e,
+avatar:i,preview:function(t,e){
+u(t).innerHTML="<style>"+n+'</style><div class="w"><div class="ct">'+l(s(e),!1,!1)+"</div></div>"},
+play:function(t,e){var o=s(e),a=o.map(function(t){return t.id}),r=a.slice(1),i={},c={}
+;o.forEach(function(t){i[t.id]=t.name,c[t.id]={tone:t.tone,photo:!!t.photo,shape:t.shape||"face"}})
+;var d=u(t)
+;d.innerHTML="<style>"+n+'</style><div class="w"><p class="st" role="status" aria-live="polite"></p><div class="ct">'+l(o,!0,e.counts)+"</div></div>"
+;var h=d.querySelector(".ct"),f=d.querySelector(".st"),g=d.querySelector(".b"),x=!1,b=null,m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches
+;function v(t,e){f.textContent=t,f.className="st"+(e?" t":"")}function y(t){
+return new Promise(function(e){setTimeout(e,t)})}function w(t){
+var e=h.getBoundingClientRect(),o=function(t){
+var e=h.getBoundingClientRect(),o=d.querySelector('[data-id="'+t+'"] .p').getBoundingClientRect()
+;return{x:o.left-e.left+o.width/2,y:o.top-e.top+o.height/2,r:o.width/2}
+}(t),n=e.width/2-o.x,a=e.height/2-o.y,r=Math.hypot(n,a)||1,i=o.r+16;return{x:o.x+n/r*i,y:o.y+a/r*i}}
+function _(t){g.style.left=t.x+"px",g.style.top=t.y+"px"}function M(t){
+[].forEach.call(d.querySelectorAll(".s"),function(e){
+e.classList.toggle("h",e.getAttribute("data-id")===t)}),_(w(t))}function k(t,e,o){
+return new Promise(function(n){
+var a=w(t),r=w(e),i=m?0:Math.min(70,.22*Math.hypot(r.x-a.x,r.y-a.y)),s=m?Math.min(o,150):o,l=performance.now()
+;!function t(){if(x)return n()
+;var e=Math.min(1,(performance.now()-l)/s),o=e<.5?2*e*e:1-Math.pow(-2*e+2,2)/2;_({x:a.x+(r.x-a.x)*o,
+y:a.y+(r.y-a.y)*o-Math.sin(Math.PI*e)*i}),e<1?requestAnimationFrame(t):n()}()})}function A(t){
+h.classList.toggle("y",t),[].forEach.call(d.querySelectorAll("button.a"),function(e){e.disabled=!t})
+}d.addEventListener("click",function(t){var e=t.target.closest("[data-t]");if(e&&b&&!e.disabled){
+var o=b;b=null,o(e.getAttribute("data-t"))}});var E=async function(){
+var t,o,n,s=e.throws-e.toYou,l=[],u={},h={},f={},g=[],m=(new Date).toISOString()
+;for(t=0;t<e.toYou;t++)l.push("P");for(t=0;t<s-e.toYou;t++)l.push("N")
+;for(t=l.length-1;t>0;t--)o=Math.floor(Math.random()*(t+1)),n=l[t],l[t]=l[o],l[o]=n
+;a.forEach(function(t){u[t]=0,h[t]=0})
+;var w=r[Math.floor(Math.random()*r.length)],_=0,E=0,D=performance.now(),C=D;if(M(w),await y(500),
+x)return null;for(;;){var L;if("you"===w){if(v("You have the ball. Tap a player to throw it.",1),
+A(!0),L=await new Promise(function(t){b=t}),A(!1),x||!L)return null}else{if(_>=l.length)break
+;if(v(i[w]+" has the ball."),await y(Math.max(0,e.hold+(2*Math.random()-1)*e.vary)),x)return null
+;if("P"===l[_++])L="you";else L=p(r.filter(function(t){return t!==w}),u)}
+var S=performance.now(),j=w+">"+L;if(g.push({throw_number:++E,from_id:w,to_id:L,
+hold_ms:Math.round(S-C),elapsed_ms:Math.round(S-D)}),h[w]++,f[j]=(f[j]||0)+1,await k(w,L,e.flight),
+x)return null;u[L]++;var B=d.querySelector('[data-c="'+L+'"]');B&&(B.textContent=u[L]),w=L,
+C=performance.now(),M(w)}if(await y(400),x)return null;v("Done.");var F=0,q=0,P=0
+;return Object.keys(f).forEach(function(t){var e=t.split(">")
+;"you"===e[0]?P+=f[t]:"you"===e[1]?q+=f[t]:F+=f[t]}),{trial:e.n,name:e.name||"",npcs:r.length,
+total_throws:E,planned_to_you:e.toYou,received:u,passes:h,pairs:f,npc_to_npc:F,npc_to_you:q,
+you_to_npc:P,names:i,looks:c,started_at:m,throws:g}}();return E.stop=function(){x=!0,b&&(b(null),
+b=null)},E},pack:function(t,e){return{v:1,study:(e=e||{}).study||"",pid:e.pid||"",trial:t.trial,
+name:t.name||"",started_at:t.started_at,npcs:t.npcs,total:t.total_throws,
+planned_to_you:t.planned_to_you,received:t.received,passes:t.passes,pairs:t.pairs,
+npc_to_npc:t.npc_to_npc,npc_to_you:t.npc_to_you,you_to_npc:t.you_to_npc,names:t.names,looks:t.looks,
+log:t.throws.map(function(t){
+return[t.throw_number,c(t.from_id),c(t.to_id),t.hold_ms,t.elapsed_ms].join(",")}).join(";")}},
+pick:function(o,r){var s=null!=(r=r||{}).tone?r.tone:4,l=e.indexOf(r.shape)>=0?r.shape:"face",c=u(o)
+;function p(){
+c.innerHTML="<style>"+n+a+'</style><div class="w"><p class="st">Choose how you’ll appear to the other players.</p><div class="pvbox a">'+i({
+tone:s,shape:l})+'</div><div class="op" role="group" aria-label="Shape">'+e.map(function(t){
+return'<button type="button" class="sb'+(t===l?" on":"")+'" data-sh="'+t+'" aria-pressed="'+(t===l)+'">'+t+"</button>"
+}).join("")+'</div><div class="op" role="group" aria-label="Skin tone">'+t.map(function(e,o){
+return'<button type="button" class="tb'+(o===s?" on":"")+'" style="background:'+e+'" data-tn="'+o+'" aria-pressed="'+(o===s)+'" aria-label="Skin tone '+(o+1)+" of "+t.length+'"></button>'
+}).join("")+'</div><button type="button" class="gob">Continue</button></div>'}return p(),
+new Promise(function(t){c.addEventListener("click",function(e){
+var o=e.target.closest("[data-sh]"),n=e.target.closest("[data-tn]"),a=e.target.closest(".gob")
+;o?(l=o.getAttribute("data-sh"),p()):n?(s=+n.getAttribute("data-tn"),p()):a&&t({tone:s,shape:l})})})
+}}}();
 </script>
 <script id="bt-app">
 (function () {
@@ -145,6 +227,7 @@ var BT=function(){"use strict";var t=["#F6EDE4","#F3E7DB","#F7EAD0","#EADABA","#
 
 /* ---------- constants & helpers ---------- */
 var TONES = BT.TONES;
+var SHAPES = BT.SHAPES;
 var MAX_NPC = 5, MIN_NPC = 2, MAX_TRIALS = 30, MAX_THROWS = 60;
 var STORE_KEY = "balltoss.cfg.v2";
 var CODE_LIMIT = 20000;
@@ -235,13 +318,13 @@ if (HASH) { runPlayer(HASH); return; }
 function defaultCfg() {
   return {
     v: 2,
-    participant: { name: "You", tone: 4, photo: null },
+    participant: { name: "You", tone: 4, shape: "face", photo: null },
     npcs: [
-      { name: "Player 2", tone: 1, photo: null },
-      { name: "Player 3", tone: 6, photo: null },
-      { name: "Player 4", tone: 3, photo: null },
-      { name: "Player 5", tone: 8, photo: null },
-      { name: "Player 6", tone: 5, photo: null }
+      { name: "Player 2", tone: 1, shape: "face", photo: null },
+      { name: "Player 3", tone: 6, shape: "face", photo: null },
+      { name: "Player 4", tone: 3, shape: "face", photo: null },
+      { name: "Player 5", tone: 8, shape: "face", photo: null },
+      { name: "Player 6", tone: 5, shape: "face", photo: null }
     ],
     trials: [
       { name: "", npcs: 3, throws: 20, toYou: 5, look: [] },
@@ -250,14 +333,15 @@ function defaultCfg() {
     ],
     pace: { holdMs: 1200, varMs: 400, flightMs: 700 },
     showCounts: true,
-    qualtrics: { study: "study-1", pidPipe: pipe(), advanceSec: 2, mode: "inline", hostUrl: "" }
+    qualtrics: { study: "study-1", pidPipe: pipe(), advanceSec: 2, mode: "inline", hostUrl: "", letChoose: false }
   };
 }
 function cleanPerson(src, base) {
-  var o = { name: base.name, tone: base.tone, photo: null };
+  var o = { name: base.name, tone: base.tone, shape: "face", photo: null };
   if (src && typeof src === "object") {
     if (typeof src.name === "string") o.name = src.name.slice(0, 24);
     o.tone = clamp(src.tone, 0, TONES.length - 1);
+    if (SHAPES.indexOf(src.shape) >= 0) o.shape = src.shape;
     if (typeof src.photo === "string" && src.photo.indexOf("data:image/") === 0) o.photo = src.photo;
   }
   return o;
@@ -270,6 +354,7 @@ function cleanLook(arr) {
       r = {};
       if (typeof o.name === "string") r.name = o.name.slice(0, 24);
       if (o.tone != null) r.tone = clamp(o.tone, 0, TONES.length - 1);
+      if (SHAPES.indexOf(o.shape) >= 0) r.shape = o.shape;
       if (o.photo === null) r.photo = null;
       else if (typeof o.photo === "string" && o.photo.indexOf("data:image/") === 0) r.photo = o.photo;
       if (!Object.keys(r).length) r = null;
@@ -302,6 +387,7 @@ function normalizeCfg(c) {
     if (c.qualtrics.advanceSec != null) d.qualtrics.advanceSec = clampF(c.qualtrics.advanceSec, 0, 60);
     if (c.qualtrics.mode === "hosted" || c.qualtrics.mode === "inline") d.qualtrics.mode = c.qualtrics.mode;
     if (typeof c.qualtrics.hostUrl === "string" && /^https:\/\//.test(c.qualtrics.hostUrl.trim())) d.qualtrics.hostUrl = c.qualtrics.hostUrl.trim().slice(0, 200);
+    if (typeof c.qualtrics.letChoose === "boolean") d.qualtrics.letChoose = c.qualtrics.letChoose;
   }
   return d;
 }
@@ -324,14 +410,14 @@ var run = null;
 /* ---------- trial specs (what the game runtime plays) ---------- */
 function npcLook(ti, j) {
   var b = cfg.npcs[j], o = ti != null && cfg.trials[ti].look && cfg.trials[ti].look[j];
-  var r = { name: b.name, tone: b.tone, photo: b.photo };
-  if (o) ["name", "tone", "photo"].forEach(function (k) { if (Object.prototype.hasOwnProperty.call(o, k)) r[k] = o[k]; });
+  var r = { name: b.name, tone: b.tone, shape: b.shape, photo: b.photo };
+  if (o) ["name", "tone", "shape", "photo"].forEach(function (k) { if (Object.prototype.hasOwnProperty.call(o, k)) r[k] = o[k]; });
   return r;
 }
 function tname(i) { return (cfg.trials[i] && cfg.trials[i].name) || "Trial " + (i + 1); }
 function trialSpec(ti) {
   var tr = cfg.trials[ti], npcs = [];
-  function person(p) { var o = { name: p.name, tone: p.tone }; if (p.photo) o.photo = p.photo; return o; }
+  function person(p) { var o = { name: p.name, tone: p.tone, shape: p.shape || "face" }; if (p.photo) o.photo = p.photo; return o; }
   for (var i = 0; i < tr.npcs; i++) npcs.push(person(npcLook(ti, i)));
   return {
     n: ti + 1, name: tname(ti), study: cfg.qualtrics.study, throws: tr.throws, toYou: tr.toYou,
@@ -381,6 +467,10 @@ function renderPlayers() {
   if (scope !== "all" && scope >= cfg.trials.length) scope = "all";
   function card(who, title, note) {
     var p = lookOf(who);
+    var shp = SHAPES.map(function (sh) {
+      return '<button type="button" class="shb' + (!p.photo && p.shape === sh ? " on" : "") + '" data-shape="' + sh + '" data-who="' + who +
+        '" aria-pressed="' + (!p.photo && p.shape === sh) + '">' + sh + '</button>';
+    }).join("");
     var sws = TONES.map(function (c, ti) {
       return '<button type="button" class="sw" style="background:' + c + '" data-tone="' + ti + '" data-who="' + who +
         '" aria-pressed="' + (!p.photo && p.tone === ti) + '" aria-label="' + title + ' skin tone ' + (ti + 1) + ' of ' + TONES.length + '"></button>';
@@ -390,7 +480,8 @@ function renderPlayers() {
       '<div class="pf"><label for="nm-' + who + '">' + title + ' name</label>' +
       '<input id="nm-' + who + '" type="text" maxlength="24" data-name="' + who + '" value="' + esc(p.name) + '">' +
       (note ? '<span class="note">' + note + '</span>' : "") + '</div>' +
-      '<div class="pt"><div class="sws" role="group" aria-label="' + title + ' skin tone">' + sws + '</div>' +
+      '<div class="pt"><div class="shapes" role="group" aria-label="' + title + ' avatar shape">' + shp + '</div>' +
+      '<div class="sws" role="group" aria-label="' + title + ' skin tone">' + sws + '</div>' +
       '<div class="pbtns"><button type="button" class="btn small" data-act="photo" data-who="' + who + '">Upload photo</button>' +
       (p.photo ? '<button type="button" class="btn small" data-act="unphoto" data-who="' + who + '">Remove photo</button><span class="note">Photo in use</span>' : "") +
       '<input type="file" accept="image/*" hidden data-file="' + who + '"></div></div></div>';
@@ -418,7 +509,10 @@ function runtimeSrc() { var el = $("#bt-runtime"); return el ? el.textContent.tr
 function trialCode(i) {
   var src = runtimeSrc(); if (!src) return "";
   var q = cfg.qualtrics, ms = Math.round(q.advanceSec * 1000);
-  return src + "\n\nvar TRIAL = " + JSON.stringify(trialSpec(i)) + ";\n\n" +
+  var youOverride = q.letChoose
+    ? "var YOU_OV = \"${e://Field/bt_you}\";\ntry { var yo = JSON.parse(YOU_OV); if (yo && typeof yo === 'object') { if (yo.tone != null) TRIAL.you.tone = yo.tone; if (yo.shape) TRIAL.you.shape = yo.shape; } } catch (e) {}\n\n"
+    : "";
+  return "/* Replace EVERYTHING in the JavaScript box with this, including Qualtrics' starter lines. */\n" + src + "\n\nvar TRIAL = " + JSON.stringify(trialSpec(i)) + ";\n\n" + youOverride +
     "Qualtrics.SurveyEngine.addOnload(function () { this.hideNextButton(); });\n\n" +
     "Qualtrics.SurveyEngine.addOnReady(function () {\n" +
     "  var q = this, h = document.createElement('div');\n" +
@@ -429,9 +523,30 @@ function trialCode(i) {
     "    Qualtrics.SurveyEngine.setEmbeddedData('bt_t" + (i + 1) + "', JSON.stringify(BT.pack(r, { study: " + JSON.stringify(q.study) + ", pid: " + JSON.stringify(q.pidPipe) + " })));\n" +
     "    setTimeout(function () { q.clickNextButton(); }, " + ms + ");\n" +
     "  });\n" +
-    "});\n";
+    "});\n" +
+    "/* END OF CODE. If you can\u2019t see this line at the very bottom, the paste was cut off. */\n";
 }
-function fieldNames() { return cfg.trials.map(function (t, i) { return "bt_t" + (i + 1); }); }
+function pickerCode() {
+  var src = runtimeSrc(); if (!src) return "";
+  var q = cfg.qualtrics, start = { tone: cfg.participant.tone, shape: cfg.participant.shape || "face" };
+  return "/* Replace EVERYTHING in the JavaScript box with this, including Qualtrics' starter lines. */\n" + src + "\n\n" +
+    "Qualtrics.SurveyEngine.addOnload(function () { this.hideNextButton(); });\n\n" +
+    "Qualtrics.SurveyEngine.addOnReady(function () {\n" +
+    "  var q = this, h = document.createElement('div');\n" +
+    "  h.style.cssText = 'max-width:420px;margin:0 auto';\n" +
+    "  q.getQuestionContainer().appendChild(h);\n" +
+    "  BT.pick(h, " + JSON.stringify(start) + ").then(function (r) {\n" +
+    "    Qualtrics.SurveyEngine.setEmbeddedData('bt_you', JSON.stringify(r));\n" +
+    "    q.clickNextButton();\n" +
+    "  });\n" +
+    "});\n" +
+    "/* END OF CODE. If you can\u2019t see this line at the very bottom, the paste was cut off. */\n";
+}
+function fieldNames() {
+  var f = cfg.trials.map(function (t, i) { return "bt_t" + (i + 1); });
+  if (cfg.qualtrics.letChoose) f.unshift("bt_you");
+  return f;
+}
 function defaultHost() {
   if (window.claude || location.protocol !== "https:") return "";
   return location.href.split(/[?#]/)[0];
@@ -479,18 +594,19 @@ function renderQUI() {
   var q = cfg.qualtrics, hosted = q.mode === "hosted";
   var hb = $("#qHostBox"); if (hb) hb.hidden = !hosted;
   var st = $("#qSteps"), lim = $("#qLimits"); if (!st) return;
-  var flow = '<li>In Survey Flow, add an Embedded Data element above your game blocks. Add each field name from the copy button (bt_t1, bt_t2, and so on).</li>';
+  var flow = '<li>In Survey Flow, add an Embedded Data element above your game blocks. Add each field name from the copy button (' + fieldNames().join(", ") + ').</li>';
+  var picker = q.letChoose ? '<li>Add one more Text/Graphic question, before all the trial questions, for the participant to pick how they\u2019ll appear. Paste its code (the \u201cchoose your look\u201d button) into that question\u2019s JavaScript, the same way as a trial.</li>' : "";
   var end = '<li>Preview the survey and play through. Then check the responses for the bt_ fields. Each response holds only the trials that participant played, so it also shows who got which trials.</li>';
   if (hosted) {
     st.innerHTML =
-      '<li>Put this page online first. Rename the file index.html and turn on GitHub Pages, then enter the page\u2019s address above.</li>' + flow +
+      '<li>Put this page online first. Rename the file index.html and turn on GitHub Pages, then enter the page\u2019s address above.</li>' + flow + picker +
       '<li>Add one Text/Graphic question per trial, each on its own page. Type your instructions in the question text.</li>' +
-      '<li>For each question, open its options, choose Add JavaScript, and replace what\u2019s there with that trial\u2019s code. That\u2019s the only thing you paste.</li>' + end;
+      '<li>For each question, click JavaScript in the left panel under Question behavior (not the question text box), press Select All and Delete to clear everything there, including Qualtrics\u2019 starter lines, then paste that trial\u2019s code and save. That\u2019s the only thing you paste.</li>' + end;
     lim.textContent = "Each trial\u2019s code is a short piece of JavaScript with a link to your page and the trial\u2019s settings. Uploaded photos make it longer.";
   } else {
-    st.innerHTML = flow +
+    st.innerHTML = flow + picker +
       '<li>Add one Text/Graphic question per trial, each on its own page. It helps to name each question after its trial. Type your instructions in the question text.</li>' +
-      '<li>For each question, open its options, choose Add JavaScript, and replace what\u2019s there with that trial\u2019s code. Nothing else needs pasting.</li>' +
+      '<li>For each question, click JavaScript in the left panel under Question behavior (not the question text box), press Select All and Delete to clear everything there, including Qualtrics\u2019 starter lines, then paste that trial\u2019s code and save. Nothing else needs pasting.</li>' +
       '<li>To give different participants different trials, use a Randomizer in Survey Flow, as you normally would.</li>' + end;
     lim.textContent = "Qualtrics allows up to 20,000 characters, and each trial\u2019s code is about 8,000. Uploaded photos add to that, so the sizes above show how much room is left.";
   }
@@ -524,7 +640,7 @@ function viewSetup() {
     'To you is how many times an NPC throws to the participant; it can\u2019t exceed half the total, because each catch is followed by the participant\u2019s own throw.</p></section>' +
 
     '<section><h2>Players</h2><div id="players"></div>' +
-    '<p class="hint">Pick a skin tone or upload a photo. All avatars share the same background and clothing, so tone is the only difference. To give the NPCs different names or looks in a particular trial, choose that trial in the menu above. Photos make each trial\u2019s Qualtrics code much longer.</p></section>' +
+    '<p class="hint">Pick a shape and skin tone, or upload a photo. Choosing a shape (circle, square, triangle, star) replaces the face icon with a colored shape. To give the NPCs different names or looks in a particular trial, choose that trial in the menu above. Photos make each trial\u2019s Qualtrics code much longer.</p></section>' +
 
     '<section><h2>Pacing and display</h2>' +
     '<div class="field"><label for="pHold">NPC holds the ball for (seconds)</label><input id="pHold" type="number" step="0.1" min="0" max="10" value="' + (p.holdMs / 1000) + '"></div>' +
@@ -556,6 +672,10 @@ function viewSetup() {
     '<p class="hint">Qualtrics fills this in for each person. The default is their Response ID.</p></div>' +
     '<div class="field"><label for="qSec">Move to the next page after a trial ends (seconds)</label>' +
     '<input id="qSec" type="number" step="1" min="0" max="60" value="' + q.advanceSec + '"></div>' +
+    '<label class="check"><input type="checkbox" id="qLetChoose"' + (q.letChoose ? " checked" : "") + '> Let participants pick their own shape and skin tone before playing</label>' +
+    '<p class="hint">Adds one more question, before the trial questions, where the participant chooses how they\u2019ll appear. Their choice then replaces the participant\u2019s default look in every trial. It doesn\u2019t let them upload a photo.</p>' +
+    '<div id="pickerBox"' + (q.letChoose ? "" : " hidden") + ' class="actions" style="margin:.75rem 0 1rem">' +
+    '<button type="button" class="btn block" data-act="copypicker">Copy “choose your look” code</button></div>' +
     '<div id="trialCodes"></div>' +
     '<div class="actions" style="margin-top:1rem"><button type="button" class="btn block" data-act="copyfields">Copy field names</button></div>' +
     '<div id="qFallback"></div>' +
@@ -687,13 +807,16 @@ function summaryHeader() {
   head.push("npc_to_npc_passes", "npc_to_participant_passes", "participant_to_npc_passes");
   pairCols().forEach(function (p) { head.push("pass_" + csvId(p[0]) + "_to_" + csvId(p[1])); });
   for (i = 1; i <= MAX_NPC; i++) head.push("npc" + i + "_name");
-  head.push("participant_tone");
-  for (i = 1; i <= MAX_NPC; i++) head.push("npc" + i + "_tone");
+  head.push("participant_look");
+  for (i = 1; i <= MAX_NPC; i++) head.push("npc" + i + "_look");
   return head;
 }
 function toneLabel(t, id) {
   var l = t.looks && t.looks[id];
-  return l ? (l.photo ? "photo" : l.tone + 1) : "";
+  if (!l) return "";
+  if (l.photo) return "photo";
+  var shape = l.shape && l.shape !== "face" ? l.shape + " " : "";
+  return shape + (l.tone + 1);
 }
 /* rank each trial by when it was played, so we know the order a participant saw them in */
 function orderRanks(trials) {
@@ -1046,9 +1169,13 @@ function note(msg) {
 }
 
 document.addEventListener("click", function (e) {
-  var t = e.target.closest("[data-act],[data-tone]"); if (!t) return;
+  var t = e.target.closest("[data-act],[data-tone],[data-shape]"); if (!t) return;
   if (t.hasAttribute("data-tone")) {
     setLook(t.getAttribute("data-who"), { tone: parseInt(t.getAttribute("data-tone"), 10), photo: null });
+    renderPlayers(); renderPreview(); persist(); return;
+  }
+  if (t.hasAttribute("data-shape")) {
+    setLook(t.getAttribute("data-who"), { shape: t.getAttribute("data-shape"), photo: null });
     renderPlayers(); renderPreview(); persist(); return;
   }
   var act = t.getAttribute("data-act"), who = t.getAttribute("data-who");
@@ -1078,6 +1205,11 @@ document.addEventListener("click", function (e) {
       copyText(code, "Trial " + (ti + 1) + " code"); break;
     }
     case "copyfields": copyText(fieldNames().join("\n"), "Field names"); break;
+    case "copypicker": {
+      var pc = pickerCode();
+      if (!pc) { toast("The game code isn\u2019t available on this page."); break; }
+      copyText(pc, "Avatar-picker code"); break;
+    }
     case "save": saveFile("ball-toss-settings.json", JSON.stringify(cfg, null, 1)); break;
     case "load": $("#loadfile").click(); break;
     case "next": if (run && run.next) { var nx = run.next; run.next = null; nx(); } break;
@@ -1133,20 +1265,17 @@ document.addEventListener("change", function (e) {
   else if (t.id === "pVar") { cfg.pace.varMs = Math.round(clampF(t.value, 0, 5) * 1000); persist(); }
   else if (t.id === "pFly") { cfg.pace.flightMs = Math.round(clampF(t.value, 0.05, 3) * 1000); persist(); }
   else if (t.id === "showCounts") { cfg.showCounts = t.checked; persist(); }
+  else if (t.id === "qLetChoose") {
+    cfg.qualtrics.letChoose = t.checked;
+    var pb = $("#pickerBox"); if (pb) pb.hidden = !t.checked;
+    renderQUI(); persist();
+  }
   else if (t.id === "qStudy") { cfg.qualtrics.study = t.value.trim().slice(0, 60); persist(); }
   else if (t.id === "qPid") { cfg.qualtrics.pidPipe = t.value.trim().slice(0, 120); persist(); }
   else if (t.name === "qmode") { cfg.qualtrics.mode = t.value; renderQUI(); persist(); }
   else if (t.id === "qHost") {
     var hv = t.value.trim();
     if (!hv || /^https:\/\//.test(hv)) { cfg.qualtrics.hostUrl = hv === defaultHost() ? "" : hv; renderQUI(); persist(); }
-    else toast("The address should start with https://");
-  }
-  else if (t.id === "qStudy") { cfg.qualtrics.study = t.value.trim().slice(0, 60); persist(); }
-  else if (t.id === "qPid") { cfg.qualtrics.pidPipe = t.value.trim().slice(0, 120); persist(); }
-  else if (t.id === "qMode") { cfg.qualtrics.mode = t.value === "inline" ? "inline" : "link"; renderQualtricsUi(); persist(); }
-  else if (t.id === "qUrl") {
-    var uv = t.value.trim();
-    if (!uv || /^https:\/\/[^\s"'<>]+$/.test(uv)) { cfg.qualtrics.scriptUrl = uv; persist(); }
     else toast("The address should start with https://");
   }
   else if (t.id === "qSec") { cfg.qualtrics.advanceSec = clampF(t.value, 0, 60); t.value = cfg.qualtrics.advanceSec; persist(); }
