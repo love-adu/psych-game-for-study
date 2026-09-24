@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ball-toss task</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#18222E; --muted:#56626E; --line:#C9D2DA;
+  --accent:#2F5D8A; --accent-ink:#FFFFFF; --ball:#E8A21A; --court:#DCE3E8; --danger:#A33A2B;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161C; --surface:#18212A; --ink:#E7ECF0; --muted:#9AA7B2; --line:#2E3A45;
+    --accent:#7FB0E0; --accent-ink:#0E1720; --ball:#F2B134; --court:#1B2530; --danger:#E58B7B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161C; --surface:#18212A; --ink:#E7ECF0; --muted:#9AA7B2; --line:#2E3A45;
+  --accent:#7FB0E0; --accent-ink:#0E1720; --ball:#F2B134; --court:#1B2530; --danger:#E58B7B;
+}
+html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
+*{ box-sizing: border-box; }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:400 16px/1.5 "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{ max-width:680px; margin:0 auto; padding:20px 16px 56px; }
+h1{ font-size:1.75rem; line-height:1.15; letter-spacing:-.01em; margin:0 0 .4rem; font-weight:700; }
+h2{ font-size:1.15rem; margin:0 0 .75rem; font-weight:700; }
+section{ margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--line); }
+.lede{ color:var(--muted); margin:0 0 1.25rem; }
+.hint{ color:var(--muted); font-size:.875rem; margin:.6rem 0 0; }
+.center{ text-align:center; }
+label{ font-weight:500; font-size:.95rem; }
+input[type=text], input[type=number], textarea{
+  font:inherit; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:8px; padding:.55rem .7rem; width:100%; min-height:44px;
+}
+textarea{ min-height:96px; resize:vertical; }
+:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+.btn{
+  font:inherit; font-weight:500; min-height:44px; padding:.5rem 1rem; border-radius:8px;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer;
+}
+.btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+.btn.small{ min-height:38px; padding:.3rem .8rem; font-size:.9rem; }
+.btn.sq{ width:44px; padding:0; font-size:1.25rem; }
+.btn.block{ display:block; width:100%; }
+.line{ display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.stepper{ display:flex; gap:.4rem; align-items:center; }
+.stepper input{ width:64px; text-align:center; }
+.tr{ display:grid; grid-template-columns:3.4rem repeat(3, 1fr); gap:.5rem; align-items:center; margin-bottom:.5rem; }
+.tr.th{ color:var(--muted); font-size:.85rem; }
+.tr .tn{ font-weight:500; }
+.tr input{ text-align:center; padding-left:.3rem; padding-right:.3rem; }
+.applyrow{ margin:1rem 0 1.25rem; padding-bottom:1rem; border-bottom:1px dashed var(--line); }
+.applyrow .btn{ margin-top:.25rem; }
+.pc{ display:grid; grid-template-columns:auto 1fr; gap:.6rem 1rem; padding:1rem 0; border-bottom:1px solid var(--line); }
+.pc:first-child{ padding-top:.25rem; }
+.pav{ width:56px; height:56px; border-radius:50%; overflow:hidden; background:#C5CDD6; }
+.pav svg, .pav img, .av svg, .av img{ display:block; width:100%; height:100%; object-fit:cover; }
+.pf label{ display:block; margin-bottom:.25rem; }
+.pt{ grid-column:1 / -1; }
+.sws{ display:flex; flex-wrap:wrap; gap:.5rem; }
+.sw{
+  width:34px; height:34px; border-radius:50%; border:0; padding:0; cursor:pointer;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.28);
+}
+.sw[aria-pressed="true"]{ outline:3px solid var(--accent); outline-offset:2px; }
+.pbtns{ display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.6rem; align-items:center; }
+.pbtns .note{ color:var(--muted); font-size:.85rem; }
+.field{ margin-bottom:1rem; }
+.field label{ display:block; margin-bottom:.3rem; }
+.check{ display:flex; gap:.6rem; align-items:center; min-height:44px; }
+.check input{ width:22px; height:22px; }
+.actions{ display:grid; gap:.75rem; }
+.pair{ display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+.linkrow{ display:flex; gap:.5rem; }
+.toast{
+  position:fixed; left:50%; transform:translateX(-50%); bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+  background:var(--ink); color:var(--bg); padding:.6rem 1rem; border-radius:10px; font-size:.9rem;
+  max-width:90vw; opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.toast.on{ opacity:1; }
+
+/* The court */
+.court{
+  --av:clamp(56px, 15vw, 78px);
+  position:relative; width:100%; max-width:600px; margin:0 auto;
+  height:clamp(380px, 118vw, 520px); background:var(--court); border-radius:20px; overflow:hidden;
+}
+.seat{
+  position:absolute; width:calc(var(--av) + 28px);
+  transform:translate(-50%, calc(var(--av) / -2));
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.avwrap{ position:relative; width:var(--av); height:var(--av); }
+.av{
+  display:block; width:100%; height:100%; border-radius:50%; overflow:hidden; padding:0; border:0;
+  background:#C5CDD6; color:inherit; font:inherit;
+}
+button.av{ cursor:default; }
+button.av:disabled{ opacity:1; }
+.court.your-turn .seat.npc button.av{ cursor:pointer; box-shadow:0 0 0 3px var(--accent); }
+.seat.has-ball .av{ box-shadow:0 0 0 4px var(--ball); }
+.seat.you .av{ box-shadow:0 0 0 2px var(--ink); }
+.seat.you.has-ball .av{ box-shadow:0 0 0 4px var(--ball); }
+.nm{
+  font-size:.85rem; font-weight:500; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink);
+}
+.seat.you .nm{ font-weight:700; }
+.cnt{
+  position:absolute; top:-4px; right:-6px; min-width:22px; height:22px; padding:0 6px; border-radius:11px;
+  background:var(--ink); color:var(--bg); font-size:.8rem; font-weight:700; line-height:22px; text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.ball{
+  position:absolute; left:50%; top:52%; width:26px; height:26px; border-radius:50%;
+  transform:translate(-50%,-50%); z-index:3; pointer-events:none;
+  background:radial-gradient(circle at 35% 30%, #F8CB68, var(--ball) 58%, #BF7C0C);
+  box-shadow:0 2px 4px rgba(0,0,0,.28);
+}
+
+/* Run views */
+.runbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; min-height:44px; }
+.runbar strong{ font-size:1.05rem; }
+.status{ text-align:center; min-height:1.6em; margin:.25rem 0 .9rem; font-weight:500; }
+.status.turn{ color:var(--accent); font-weight:700; }
+.panel{ padding:2rem 0; }
+.intro{ white-space:pre-line; font-size:1.05rem; margin:1rem 0 1.5rem; }
+.scroll{ overflow-x:auto; margin:1rem 0; }
+table{ border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums; }
+th, td{ padding:.55rem .7rem; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap; }
+th:first-child, td:first-child{ text-align:left; }
+tfoot td{ font-weight:700; }
+details{ margin-top:1.25rem; }
+.steps{ padding-left:1.25rem; margin:.5rem 0 1rem; }
+.steps li{ margin-bottom:.35rem; }
+.status-list{ list-style:none; padding:0; margin:1rem 0 0; }
+.status-list li{ padding:.5rem 0; border-bottom:1px solid var(--line); }
+.status-list b{ font-weight:700; }
+summary{ cursor:pointer; min-height:44px; display:flex; align-items:center; font-weight:500; }
+textarea.raw{ font:12px/1.4 ui-monospace, Menlo, Consolas, monospace; min-height:140px; white-space:pre; }
+@media (prefers-reduced-motion: reduce){ .toast{ transition:none; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript>This task needs JavaScript.</noscript>
+
+<script>
+(function () {
+"use strict";
+
+/* ---------- constants & helpers ---------- */
+var TONES = ["#F6EDE4","#F3E7DB","#F7EAD0","#EADABA","#D7BD96","#A07E56","#825C43","#604134","#3A312A","#292420"];
+var MAX_NPC = 5, MIN_NPC = 2, MAX_TRIALS = 30, MAX_THROWS = 60;
+var STORE_KEY = "balltoss.cfg.v1";
+var ABORT = { abort: true };
+var SHEET_URL_RE = /^https:\/\/script\.google\.com\/(a\/[\w.-]+\/)?macros\/s\/[\w-]+\/exec$/;
+var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function $(s, root) { return (root || document).querySelector(s); }
+function $$(s, root) { return Array.prototype.slice.call((root || document).querySelectorAll(s)); }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function clamp(v, a, b) { v = parseInt(v, 10); if (isNaN(v)) v = a; return Math.min(b, Math.max(a, v)); }
+function clampF(v, a, b) { v = parseFloat(v); if (isNaN(v)) v = a; return Math.min(b, Math.max(a, v)); }
+function rnd(n) { return Math.floor(Math.random() * n); }
+function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = rnd(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function toast(msg) {
+  var t = $("#toast"); if (!t) return;
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("on"); }, 3200);
+}
+function b64enc(str) {
+  var bytes = new TextEncoder().encode(str), bin = "", CH = 0x8000;
+  for (var i = 0; i < bytes.length; i += CH) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function b64dec(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
+  var bin = atob(s), bytes = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+/* ---------- settings ---------- */
+function defaultCfg() {
+  return {
+    v: 1,
+    participant: { name: "You", tone: 4, photo: null },
+    npcs: [
+      { name: "Player 2", tone: 1, photo: null },
+      { name: "Player 3", tone: 6, photo: null },
+      { name: "Player 4", tone: 3, photo: null },
+      { name: "Player 5", tone: 8, photo: null },
+      { name: "Player 6", tone: 5, photo: null }
+    ],
+    trials: [
+      { npcs: 3, throws: 20, toYou: 5 },
+      { npcs: 3, throws: 20, toYou: 5 },
+      { npcs: 3, throws: 20, toYou: 5 }
+    ],
+    pace: { holdMs: 1200, varMs: 400, flightMs: 700 },
+    showCounts: true,
+    sheet: { url: "", key: "" },
+    intro: "You'll play a short ball-toss game with other players.\nWhen the ball comes to you, tap the player you want to throw it to.",
+    outro: "Thank you. You've finished the game."
+  };
+}
+function cleanPerson(src, base) {
+  var o = { name: base.name, tone: base.tone, photo: null };
+  if (src && typeof src === "object") {
+    if (typeof src.name === "string") o.name = src.name.slice(0, 24);
+    o.tone = clamp(src.tone, 0, TONES.length - 1);
+    if (typeof src.photo === "string" && src.photo.indexOf("data:image/") === 0) o.photo = src.photo;
+  }
+  return o;
+}
+function normalizeCfg(c) {
+  var d = defaultCfg();
+  if (!c || typeof c !== "object") return d;
+  d.participant = cleanPerson(c.participant, d.participant);
+  for (var i = 0; i < MAX_NPC; i++) d.npcs[i] = cleanPerson(c.npcs && c.npcs[i], d.npcs[i]);
+  if (Array.isArray(c.trials) && c.trials.length) {
+    d.trials = c.trials.slice(0, MAX_TRIALS).map(function (t) {
+      t = t || {};
+      var throws = clamp(t.throws, 1, MAX_THROWS);
+      return { npcs: clamp(t.npcs, MIN_NPC, MAX_NPC), throws: throws, toYou: clamp(t.toYou, 0, Math.floor(throws / 2)) };
+    });
+  }
+  if (c.pace) {
+    d.pace.holdMs = clamp(c.pace.holdMs, 0, 10000);
+    d.pace.varMs = clamp(c.pace.varMs, 0, 5000);
+    d.pace.flightMs = clamp(c.pace.flightMs, 50, 3000);
+  }
+  if (typeof c.showCounts === "boolean") d.showCounts = c.showCounts;
+  if (c.sheet && typeof c.sheet === "object") {
+    var u = typeof c.sheet.url === "string" ? c.sheet.url.trim().slice(0, 400) : "";
+    d.sheet.url = SHEET_URL_RE.test(u) ? u : "";
+    d.sheet.key = typeof c.sheet.key === "string" ? c.sheet.key.slice(0, 60) : "";
+  }
+  if (typeof c.intro === "string") d.intro = c.intro.slice(0, 1200);
+  if (typeof c.outro === "string") d.outro = c.outro.slice(0, 1200);
+  return d;
+}
+function loadLocal() {
+  try { var s = localStorage.getItem(STORE_KEY); if (s) return normalizeCfg(JSON.parse(s)); } catch (e) {}
+  return null;
+}
+var persistTimer;
+function persist() {
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(function () { try { localStorage.setItem(STORE_KEY, JSON.stringify(cfg)); } catch (e) {} }, 300);
+}
+function parseHash() {
+  var h = location.hash || "";
+  if (h.indexOf("#run=") !== 0) return null;
+  var o = {};
+  h.slice(1).split("&").forEach(function (p) {
+    var k = p.indexOf("="); if (k > 0) { try { o[p.slice(0, k)] = decodeURIComponent(p.slice(k + 1)); } catch (e) {} }
+  });
+  try { o.cfg = normalizeCfg(JSON.parse(b64dec(o.run))); return o; } catch (e) { return null; }
+}
+
+var fromHash = parseHash();
+var cfg = (fromHash && fromHash.cfg) || loadLocal() || defaultCfg();
+var run = null;
+var app = document.getElementById("app");
+
+/* ---------- avatars & court ---------- */
+function avatarHTML(p) {
+  if (p.photo) return '<img src="' + p.photo + '" alt="">';
+  var t = TONES[p.tone] || TONES[4];
+  return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+    '<rect width="100" height="100" fill="#C5CDD6"/>' +
+    '<path d="M12 100c0-24 17-36 38-36s38 12 38 36z" fill="#4A5B6E"/>' +
+    '<rect x="42" y="50" width="16" height="20" rx="7" fill="' + t + '"/>' +
+    '<ellipse cx="50" cy="38" rx="17" ry="20" fill="' + t + '"/></svg>';
+}
+function seatPos(i, n) {
+  var t = (i + 0.5) / n, a = Math.PI * (1 - t);
+  return { x: 50 + 39 * Math.cos(a), y: 50 - 33 * Math.sin(a) };
+}
+function playersFor(tr) {
+  var list = [{ id: "you", name: cfg.participant.name || "You", tone: cfg.participant.tone, photo: cfg.participant.photo }];
+  for (var i = 0; i < tr.npcs; i++) {
+    var p = cfg.npcs[i];
+    list.push({ id: "npc" + (i + 1), name: p.name || ("Player " + (i + 2)), tone: p.tone, photo: p.photo });
+  }
+  return list;
+}
+function buildCourt(box, players, interactive, showCounts) {
+  var n = players.length - 1, html = "";
+  players.forEach(function (p, idx) {
+    var pos = idx === 0 ? { x: 50, y: 83 } : seatPos(idx - 1, n);
+    var tag = (interactive && idx > 0) ? "button" : "div";
+    var attrs = (interactive && idx > 0)
+      ? ' type="button" disabled aria-label="Throw to ' + esc(p.name) + '" data-throw="' + p.id + '"' : "";
+    html += '<div class="seat ' + (idx === 0 ? "you" : "npc") + '" data-id="' + p.id + '" style="left:' + pos.x + '%;top:' + pos.y + '%">' +
+      '<div class="avwrap"><' + tag + ' class="av"' + attrs + '>' + avatarHTML(p) + '</' + tag + '>' +
+      (showCounts ? '<span class="cnt" data-cnt="' + p.id + '" aria-hidden="true">0</span>' : "") +
+      '</div><span class="nm">' + esc(p.name) + '</span></div>';
+  });
+  html += '<div class="ball" id="ball"></div>';
+  box.innerHTML = html;
+}
+
+/* ---------- setup view ---------- */
+function person(who) { return who === "you" ? cfg.participant : cfg.npcs[parseInt(who, 10)]; }
+function maxNpcs() { return Math.max.apply(null, cfg.trials.map(function (t) { return t.npcs; })); }
+
+function renderPreview() {
+  var box = $("#preview"); if (!box) return;
+  buildCourt(box, playersFor(cfg.trials[0]), false, false);
+}
+function renderTrials() {
+  var box = $("#trialRows"); if (!box) return;
+  function cell(i, k, min, max, val, lbl) {
+    return '<input type="number" inputmode="numeric" min="' + min + '" max="' + max + '" value="' + val +
+      '" data-i="' + i + '" data-k="' + k + '" aria-label="Trial ' + (i + 1) + ': ' + lbl + '">';
+  }
+  box.innerHTML = cfg.trials.map(function (t, i) {
+    return '<div class="tr" data-row="' + i + '"><span class="tn">' + (i + 1) + '</span>' +
+      cell(i, "npcs", MIN_NPC, MAX_NPC, t.npcs, "NPCs") +
+      cell(i, "throws", 1, MAX_THROWS, t.throws, "total throws") +
+      cell(i, "toYou", 0, Math.floor(t.throws / 2), t.toYou, "throws to you") + '</div>';
+  }).join("");
+  var tc = $("#tc"); if (tc) tc.value = cfg.trials.length;
+}
+function renderPlayers() {
+  var box = $("#players"); if (!box) return;
+  var whos = ["you"], n = maxNpcs(), i;
+  for (i = 0; i < n; i++) whos.push(String(i));
+  box.innerHTML = whos.map(function (who) {
+    var p = person(who);
+    var title = who === "you" ? "Participant" : "NPC " + (parseInt(who, 10) + 1);
+    var sws = TONES.map(function (c, ti) {
+      return '<button type="button" class="sw" style="background:' + c + '" data-tone="' + ti + '" data-who="' + who +
+        '" aria-pressed="' + (!p.photo && p.tone === ti) + '" aria-label="' + title + ' skin tone ' + (ti + 1) + ' of ' + TONES.length + '"></button>';
+    }).join("");
+    return '<div class="pc" data-card="' + who + '">' +
+      '<div class="pav">' + avatarHTML(p) + '</div>' +
+      '<div class="pf"><label for="nm-' + who + '">' + title + ' name</label>' +
+      '<input id="nm-' + who + '" type="text" maxlength="24" data-name="' + who + '" value="' + esc(p.name) + '"></div>' +
+      '<div class="pt"><div class="sws" role="group" aria-label="' + title + ' skin tone">' + sws + '</div>' +
+      '<div class="pbtns"><button type="button" class="btn small" data-act="photo" data-who="' + who + '">Upload photo</button>' +
+      (p.photo ? '<button type="button" class="btn small" data-act="unphoto" data-who="' + who + '">Remove photo</button><span class="note">Photo in use</span>' : "") +
+      '<input type="file" accept="image/*" hidden data-file="' + who + '"></div></div></div>';
+  }).join("");
+}
+function viewSetup() {
+  run = null;
+  var p = cfg.pace;
+  app.innerHTML =
+    '<header><h1>Ball-toss task</h1>' +
+    '<p class="lede">Set up the game, check the preview, then test it as a participant.</p></header>' +
+    '<div class="court" id="preview" role="img" aria-label="Preview of the first trial"></div>' +
+    '<p class="hint center">Preview of trial 1. It updates as you edit.</p>' +
+
+    '<section><h2>Trials</h2>' +
+    '<div class="line"><label for="tc">Number of trials</label><div class="stepper">' +
+    '<button type="button" class="btn sq" data-act="tdec" aria-label="Fewer trials">\u2212</button>' +
+    '<input id="tc" type="number" inputmode="numeric" min="1" max="' + MAX_TRIALS + '" value="' + cfg.trials.length + '">' +
+    '<button type="button" class="btn sq" data-act="tinc" aria-label="More trials">+</button></div></div>' +
+    '<div class="applyrow"><p class="hint" style="margin:.9rem 0 .5rem">Set every trial to the same values:</p>' +
+    '<div class="tr th"><span></span><span>NPCs</span><span>Throws</span><span>To you</span></div>' +
+    '<div class="tr"><span class="tn">All</span>' +
+    '<input type="number" inputmode="numeric" id="allNpcs" min="' + MIN_NPC + '" max="' + MAX_NPC + '" value="' + cfg.trials[0].npcs + '" aria-label="NPCs for all trials">' +
+    '<input type="number" inputmode="numeric" id="allThrows" min="1" max="' + MAX_THROWS + '" value="' + cfg.trials[0].throws + '" aria-label="Total throws for all trials">' +
+    '<input type="number" inputmode="numeric" id="allYou" min="0" value="' + cfg.trials[0].toYou + '" aria-label="Throws to you for all trials"></div>' +
+    '<button type="button" class="btn small" data-act="applyall">Apply to all trials</button></div>' +
+    '<div class="tr th"><span>Trial</span><span>NPCs</span><span>Throws</span><span>To you</span></div>' +
+    '<div id="trialRows"></div>' +
+    '<p class="hint" id="trialNote" aria-live="polite">NPCs is how many computer players are in the trial. Throws is the total number of throws. ' +
+    'To you is how many times an NPC throws to the participant; it can\u2019t exceed half the total, because each catch is followed by the participant\u2019s own throw.</p></section>' +
+
+    '<section><h2>Players</h2><div id="players"></div>' +
+    '<p class="hint">Pick a skin tone or upload a photo. All avatars share the same background and clothing, so tone is the only difference. Photos are cropped to a square and stored inside your settings file.</p></section>' +
+
+    '<section><h2>Pacing and display</h2>' +
+    '<div class="field"><label for="pHold">NPC holds the ball for (seconds)</label><input id="pHold" type="number" step="0.1" min="0" max="10" value="' + (p.holdMs / 1000) + '"></div>' +
+    '<div class="field"><label for="pVar">Random variation, plus or minus (seconds)</label><input id="pVar" type="number" step="0.1" min="0" max="5" value="' + (p.varMs / 1000) + '"></div>' +
+    '<div class="field"><label for="pFly">Ball flight time (seconds)</label><input id="pFly" type="number" step="0.1" min="0.05" max="3" value="' + (p.flightMs / 1000) + '"></div>' +
+    '<label class="check"><input type="checkbox" id="showCounts"' + (cfg.showCounts ? " checked" : "") + '> Show each player\u2019s catch count on screen</label>' +
+    '<p class="hint">Counts are always recorded, whether or not participants see them.</p></section>' +
+
+    '<section><h2>Text</h2>' +
+    '<div class="field"><label for="tIntro">Instructions before the game</label><textarea id="tIntro">' + esc(cfg.intro) + '</textarea></div>' +
+    '<div class="field"><label for="tOutro">Message after the last trial</label><textarea id="tOutro">' + esc(cfg.outro) + '</textarea></div></section>' +
+
+    '<section><h2>Saving data</h2>' +
+    '<p class="hint" style="margin-top:0">Finished participant sessions are saved to this page\u2019s game database automatically. Add a Google Sheet link to save them there too.</p>' +
+    '<div class="field" style="margin-top:1rem"><label for="sUrl">Google Sheet web app URL</label>' +
+    '<input id="sUrl" type="text" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/\u2026/exec" value="' + esc(cfg.sheet.url) + '"></div>' +
+    '<div class="field"><label for="sKey">Shared key (optional)</label>' +
+    '<input id="sKey" type="text" maxlength="60" autocomplete="off" value="' + esc(cfg.sheet.key) + '"></div>' +
+    '<details><summary>How to connect a Google Sheet</summary>' +
+    '<ol class="steps"><li>Open your sheet, then Extensions \u203a Apps Script.</li>' +
+    '<li>Replace the code with the script below and save.</li>' +
+    '<li>Deploy \u203a New deployment \u203a Web app. Run as: Me. Who has access: Anyone.</li>' +
+    '<li>Copy the web app URL (ends in /exec) into the box above.</li></ol>' +
+    '<textarea class="raw" id="gas" readonly aria-label="Apps Script code"></textarea>' +
+    '<button type="button" class="btn small" data-act="copygas" style="margin-top:.5rem">Copy script</button></details>' +
+    '<p class="hint">The URL and key travel inside the participant link, so treat them as semi-public. Pages hosted on claude.ai can\u2019t send data to other sites; the sheet link works once you host this file yourself.</p></section>' +
+
+    '<section id="dataSec" hidden><h2>Saved data</h2>' +
+    '<p class="hint" style="margin-top:0" id="dataInfo">Sessions saved to the game database.</p>' +
+    '<div class="actions"><button type="button" class="btn block" data-act="loaddata">Load saved sessions</button>' +
+    '<div id="dataBtns"></div></div></section>' +
+
+    '<section class="actions"><h2>Run it</h2>' +
+    '<button type="button" class="btn primary block" data-act="test">Test as participant</button>' +
+    '<div class="pair"><button type="button" class="btn" data-act="save">Save settings</button>' +
+    '<button type="button" class="btn" data-act="load">Load settings</button></div>' +
+    '<input type="file" id="loadfile" accept="application/json,.json" hidden>' +
+    '<button type="button" class="btn block" data-act="link">Get participant link</button>' +
+    '<div id="linkOut"></div>' +
+    '<p class="hint">Nothing is sent anywhere. Data leaves this page only through your downloads, or through a message to a Qualtrics survey if the game is embedded in one.</p></section>';
+  renderPreview(); renderTrials(); renderPlayers();
+  $("#gas").value = gasText();
+  initDataSection();
+}
+
+/* ---------- file helpers ---------- */
+function fileToAvatar(file) {
+  return new Promise(function (res, rej) {
+    var fr = new FileReader();
+    fr.onerror = rej;
+    fr.onload = function () {
+      var im = new Image();
+      im.onerror = rej;
+      im.onload = function () {
+        var s = Math.min(im.width, im.height), c = document.createElement("canvas");
+        c.width = c.height = 160;
+        c.getContext("2d").drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, 160, 160);
+        res(c.toDataURL("image/jpeg", 0.86));
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+async function saveFile(name, data) {
+  var dl = null;
+  try { if (window.claude && window.claude.use) dl = await window.claude.use("downloads"); } catch (e) {}
+  if (dl) {
+    try { await dl.save({ filename: name, data: data }); }
+    catch (e) { if (!e || e.code !== "declined") toast("Couldn\u2019t save the file. Copy it from Raw data instead."); }
+    return;
+  }
+  try {
+    var u = URL.createObjectURL(new Blob([data], { type: "text/plain" }));
+    var a = document.createElement("a"); a.href = u; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 1500);
+  } catch (e) { toast("Couldn\u2019t save the file. Copy it from Raw data instead."); }
+}
+function csvCell(v) { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function toCSV(rows) { return rows.map(function (r) { return r.map(csvCell).join(","); }).join("\n") + "\n"; }
+
+/* ---------- run engine ---------- */
+function viewIntro() {
+  var needId = !run.pid;
+  app.innerHTML = '<div class="panel"><h1>Ball-toss game</h1><p class="intro">' + esc(cfg.intro) + '</p>' +
+    (needId ? '<div class="field"><label for="pid">Participant ID (optional)</label><input id="pid" type="text" maxlength="60" autocomplete="off"></div>' : "") +
+    '<button type="button" class="btn primary block" data-act="start">Start</button>' +
+    (run.kind === "preview" ? '<button type="button" class="btn block" style="margin-top:.75rem" data-act="exit">Back to setup</button>' : "") +
+    '</div>';
+}
+function viewGame(i, players) {
+  app.innerHTML = '<div class="runbar"><strong>Trial ' + (i + 1) + ' of ' + cfg.trials.length + '</strong>' +
+    (run.kind === "preview" ? '<button type="button" class="btn small" data-act="exit">Exit</button>' : "") + '</div>' +
+    '<p class="status" id="status" aria-live="polite"></p><div class="court" id="court"></div>';
+  buildCourt($("#court"), players, true, cfg.showCounts);
+}
+function setStatus(text, turn) { var s = $("#status"); if (s) { s.textContent = text; s.className = "status" + (turn ? " turn" : ""); } }
+function avCenter(id) {
+  var court = $("#court"), a = court.querySelector('.seat[data-id="' + id + '"] .avwrap');
+  var c = court.getBoundingClientRect(), r = a.getBoundingClientRect();
+  return { x: r.left - c.left + r.width / 2, y: r.top - c.top + r.height / 2, r: r.width / 2 };
+}
+function restPos(id) {
+  var c = $("#court").getBoundingClientRect(), p = avCenter(id);
+  var dx = c.width / 2 - p.x, dy = c.height * 0.5 - p.y, d = Math.hypot(dx, dy) || 1, off = p.r + 16;
+  return { x: p.x + dx / d * off, y: p.y + dy / d * off };
+}
+function placeBall(pos) { var b = $("#ball"); if (b) { b.style.left = pos.x + "px"; b.style.top = pos.y + "px"; } }
+function setHolder(id) {
+  $$(".seat").forEach(function (s) { s.classList.toggle("has-ball", s.getAttribute("data-id") === id); });
+  placeBall(restPos(id));
+}
+function fly(R, from, to, ms) {
+  return new Promise(function (res) {
+    var a = restPos(from), b = restPos(to);
+    var lift = reduced ? 0 : Math.min(70, Math.hypot(b.x - a.x, b.y - a.y) * 0.22);
+    var dur = reduced ? Math.min(ms, 150) : ms, t0 = performance.now();
+    (function step() {
+      if (R.dead) return res();
+      var t = Math.min(1, (performance.now() - t0) / dur);
+      var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      placeBall({ x: a.x + (b.x - a.x) * e, y: a.y + (b.y - a.y) * e - Math.sin(Math.PI * t) * lift });
+      if (t < 1) requestAnimationFrame(step); else res();
+    })();
+  });
+}
+function alive(R) { if (R.dead) throw ABORT; }
+function makePlan(total, toYou) {
+  var k = total - toYou, plan = [], i;
+  for (i = 0; i < toYou; i++) plan.push("P");
+  for (i = 0; i < k - toYou; i++) plan.push("N");
+  return shuffle(plan);
+}
+async function playTrial(R, ti) {
+  var tr = cfg.trials[ti], players = playersFor(tr), names = {};
+  players.forEach(function (p) { names[p.id] = p.name; });
+  var npcIds = players.slice(1).map(function (p) { return p.id; });
+  var plan = makePlan(tr.throws, tr.toYou), planIdx = 0;
+  var received = {}; players.forEach(function (p) { received[p.id] = 0; });
+  viewGame(ti, players);
+  await sleep(50); alive(R);
+  var holder = npcIds[rnd(npcIds.length)], throwNo = 0, t0 = performance.now(), holdStart = t0;
+  setHolder(holder);
+  await sleep(500); alive(R);
+
+  while (true) {
+    var target;
+    if (holder === "you") {
+      setStatus("You have the ball. Tap a player to throw it.", true);
+      $("#court").classList.add("your-turn");
+      $$("#court button.av").forEach(function (b) { b.disabled = false; });
+      target = await new Promise(function (r) { R.pending = r; });
+      $("#court").classList.remove("your-turn");
+      $$("#court button.av").forEach(function (b) { b.disabled = true; });
+      alive(R);
+    } else {
+      if (planIdx >= plan.length) break;
+      setStatus(names[holder] + " has the ball.", false);
+      var hold = Math.max(0, cfg.pace.holdMs + (Math.random() * 2 - 1) * cfg.pace.varMs);
+      await sleep(hold); alive(R);
+      var dec = plan[planIdx++];
+      if (dec === "P") target = "you";
+      else {
+        var others = npcIds.filter(function (id) { return id !== holder; });
+        target = others[rnd(others.length)];
+      }
+    }
+    var now = performance.now();
+    R.throws.push({
+      session_id: R.sid, participant_id: R.pid, trial: ti + 1, throw_number: ++throwNo,
+      from_id: holder, from_name: names[holder], to_id: target, to_name: names[target],
+      thrower: holder === "you" ? "participant" : "npc",
+      hold_ms: Math.round(now - holdStart), elapsed_ms: Math.round(now - t0)
+    });
+    await fly(R, holder, target, cfg.pace.flightMs); alive(R);
+    received[target]++;
+    var badge = $('[data-cnt="' + target + '"]'); if (badge) badge.textContent = received[target];
+    holder = target; holdStart = performance.now();
+    setHolder(holder);
+  }
+  await sleep(400); alive(R);
+  R.trials.push({
+    session_id: R.sid, participant_id: R.pid, trial: ti + 1, npcs: tr.npcs, total_throws: throwNo,
+    planned_to_you: tr.toYou, received: received, names: names
+  });
+}
+function viewBetween(R, ti) {
+  return new Promise(function (res) {
+    app.innerHTML = '<div class="panel"><h1>Trial ' + (ti + 1) + ' complete</h1>' +
+      '<p class="intro">Ready for the next one?</p>' +
+      '<button type="button" class="btn primary block" data-act="next">Start trial ' + (ti + 2) + '</button></div>';
+    R.next = res;
+  });
+}
+async function runAll(R) {
+  try {
+    for (var i = 0; i < cfg.trials.length; i++) {
+      await playTrial(R, i);
+      if (i < cfg.trials.length - 1) { await viewBetween(R, i); alive(R); }
+    }
+    finishRun(R);
+  } catch (e) { if (e !== ABORT) { console.error(e); toast("Something went wrong in the game."); } }
+}
+
+/* ---------- results & export ---------- */
+var THROW_HEAD = ["session_id","participant_id","trial","throw_number","from_id","from_name","to_id","to_name","thrower","hold_ms","elapsed_ms"];
+function summaryHeader() {
+  var head = ["session_id","participant_id","started_at","trial","npc_count","total_throws","planned_to_you","received_you"], i;
+  for (i = 1; i <= MAX_NPC; i++) head.push("received_npc" + i);
+  for (i = 1; i <= MAX_NPC; i++) head.push("npc" + i + "_name");
+  return head;
+}
+/* o = { sid, pid, startedAt, trials[] } — works for a live run or a stored session */
+function summaryRows(o) {
+  return o.trials.map(function (t) {
+    var r = [o.sid, o.pid, o.startedAt, t.trial, t.npcs, t.total_throws, t.planned_to_you, t.received.you], j;
+    for (j = 1; j <= MAX_NPC; j++) r.push(t.received["npc" + j] != null ? t.received["npc" + j] : "");
+    for (j = 1; j <= MAX_NPC; j++) r.push(t.names["npc" + j] || "");
+    return r;
+  });
+}
+function throwRows(R) { return R.throws.map(function (t) { return THROW_HEAD.map(function (h) { return t[h]; }); }); }
+function runView(R) { return { sid: R.sid, pid: R.pid, startedAt: R.startedAt, trials: R.trials }; }
+function throwsCSV(R) { return toCSV([THROW_HEAD].concat(throwRows(R))); }
+function summaryCSV(R) { return toCSV([summaryHeader()].concat(summaryRows(runView(R)))); }
+
+/* --- destinations --- */
+async function claudeCap(name) {
+  try { if (window.claude && window.claude.use) return await window.claude.use(name); } catch (e) {}
+  return null;
+}
+async function saveToDb(R) {
+  var db = await claudeCap("db");
+  if (!db) return { status: "unavailable" };
+  var maxN = Math.max.apply(null, cfg.trials.map(function (t) { return t.npcs; }));
+  var settings = {
+    trials: cfg.trials, pace: cfg.pace, showCounts: cfg.showCounts,
+    participant: { name: cfg.participant.name, tone: cfg.participant.tone, photo: !!cfg.participant.photo },
+    npcs: cfg.npcs.slice(0, maxN).map(function (p) { return { name: p.name, tone: p.tone, photo: !!p.photo }; })
+  };
+  var sessionDoc = {
+    session_id: R.sid, participant_id: R.pid, kind: R.kind, started_at: R.startedAt,
+    finished_at: new Date().toISOString(), total_throws: R.throws.length, settings: settings, trial_summary: R.trials
+  };
+  var throwsDoc = {
+    session_id: R.sid, participant_id: R.pid,
+    cols: ["trial","throw_number","from_id","to_id","hold_ms","elapsed_ms"],
+    rows: R.throws.map(function (t) { return [t.trial, t.throw_number, t.from_id, t.to_id, t.hold_ms, t.elapsed_ms]; })
+  };
+  async function write() {
+    await db.doc("sessions/" + R.sid).set(sessionDoc);
+    await db.doc("throws/" + R.sid).set(throwsDoc);
+  }
+  try { await write(); return { status: "saved" }; }
+  catch (e) {
+    if (e && e.code === "unavailable") {
+      await sleep(600 + rnd(600));
+      try { await write(); return { status: "saved" }; } catch (e2) { e = e2; }
+    }
+    return { status: "failed", code: e && e.code };
+  }
+}
+async function sendToSheet(R) {
+  if (!cfg.sheet.url) return { status: "off" };
+  var body = {
+    key: cfg.sheet.key, session_id: R.sid,
+    summary_header: summaryHeader(), summary_rows: summaryRows(runView(R)),
+    throws_header: THROW_HEAD, throws_rows: throwRows(R)
+  };
+  try {
+    await fetch(cfg.sheet.url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) });
+    return { status: "sent" };
+  } catch (e) { return { status: "failed" }; }
+}
+function dbText(r) {
+  return { saved: "Saved.", unavailable: "Not available here. The game database only works on the claude.ai page, for signed-in members of your organization.",
+    failed: "Couldn\u2019t save" + (r.code ? " (" + r.code + ")." : ".") }[r.status];
+}
+function sheetText(r) {
+  return { sent: "Sent. Google doesn\u2019t confirm receipt, so check the sheet.", off: "No sheet link set up.",
+    failed: "Couldn\u2019t send." + (window.claude ? " Pages hosted on claude.ai can\u2019t reach other sites; host this file yourself for the sheet link to work." : " Check the URL and your connection.") }[r.status];
+}
+async function saveEverywhere(R, showStatus) {
+  var out = { db: null, sheet: null };
+  var els = showStatus ? { db: $("#stDb"), sheet: $("#stSheet") } : null;
+  if (els) { els.db.textContent = "Saving\u2026"; els.sheet.textContent = "Sending\u2026"; }
+  var pDb = saveToDb(R).then(function (r) { out.db = r; if (els) els.db.textContent = dbText(r); });
+  var pSh = sendToSheet(R).then(function (r) { out.sheet = r; if (els) els.sheet.textContent = sheetText(r); });
+  await Promise.all([pDb, pSh]);
+  return out;
+}
+
+function finishRun(R) {
+  R.pending = null;
+  var payload = {
+    session_id: R.sid, participant_id: R.pid, started_at: R.startedAt,
+    total_throws: R.throws.length, game_log: R.throws, trial_summary: R.trials
+  };
+  try { if (window.parent && window.parent !== window) window.parent.postMessage(payload, "*"); } catch (e) {}
+  if (R.kind === "participant") {
+    app.innerHTML = '<div class="panel"><h1>Finished</h1><p class="intro">' + esc(cfg.outro) + '</p></div>';
+    saveEverywhere(R, false).then(function (o) {
+      if (o.db.status === "failed") console.warn("Game database save failed", o.db);
+      if (o.sheet.status === "failed") console.warn("Sheet send failed");
+    });
+    return;
+  }
+  var maxN = Math.max.apply(null, R.trials.map(function (t) { return t.npcs; })), i;
+  var youName = R.trials[0].names.you;
+  var head = '<tr><th>Trial</th><th>' + esc(youName) + '</th>';
+  for (i = 1; i <= maxN; i++) head += '<th>' + esc(cfg.npcs[i - 1].name || ("Player " + (i + 1))) + '</th>';
+  head += '<th>Total</th></tr>';
+  var sums = { you: 0, total: 0 }; for (i = 1; i <= maxN; i++) sums["npc" + i] = 0;
+  var body = R.trials.map(function (t) {
+    var row = '<tr><td>' + t.trial + '</td><td>' + t.received.you + '</td>'; sums.you += t.received.you;
+    for (var j = 1; j <= maxN; j++) {
+      var v = t.received["npc" + j];
+      row += '<td>' + (v == null ? "\u2013" : v) + '</td>'; if (v != null) sums["npc" + j] += v;
+    }
+    sums.total += t.total_throws;
+    return row + '<td>' + t.total_throws + '</td></tr>';
+  }).join("");
+  var foot = '<tr><td>All</td><td>' + sums.you + '</td>';
+  for (i = 1; i <= maxN; i++) foot += '<td>' + sums["npc" + i] + '</td>';
+  foot += '<td>' + sums.total + '</td></tr>';
+  R.csvThrows = throwsCSV(R); R.csvSummary = summaryCSV(R);
+  app.innerHTML = '<h1>Results</h1><p class="lede">Balls received by each player, per trial. This is what the game recorded for participant ' + esc(R.pid || "(no ID)") + '.</p>' +
+    '<div class="scroll"><table><thead>' + head + '</thead><tbody>' + body + '</tbody><tfoot>' + foot + '</tfoot></table></div>' +
+    '<h2 style="margin-top:1.5rem">Save this test run</h2>' +
+    '<p class="hint" style="margin-top:0">Test runs aren\u2019t saved automatically. Real participant sessions are.</p>' +
+    '<ul class="status-list"><li><b>Game database:</b> <span id="stDb">Not saved yet.</span></li>' +
+    '<li><b>Google Sheet:</b> <span id="stSheet">' + (cfg.sheet.url ? "Not sent yet." : "No sheet link set up.") + '</span></li></ul>' +
+    '<div class="actions" style="margin-top:1rem"><button type="button" class="btn block" data-act="savedb">Save to game database</button>' +
+    '<button type="button" class="btn block" data-act="savesheet">Send to Google Sheet</button>' +
+    '<button type="button" class="btn primary block" data-act="dl-throws">Download throw log (.csv)</button>' +
+    '<button type="button" class="btn block" data-act="dl-summary">Download trial summary (.csv)</button>' +
+    '<div class="pair"><button type="button" class="btn" data-act="again">Run again</button><button type="button" class="btn" data-act="exit">Back to setup</button></div></div>' +
+    '<details><summary>Raw data</summary><p class="hint">Copy these if a download is blocked.</p>' +
+    '<label for="rawThrows">Throw log</label><textarea class="raw" id="rawThrows" readonly></textarea>' +
+    '<label for="rawSummary" style="display:block;margin-top:.75rem">Trial summary</label><textarea class="raw" id="rawSummary" readonly></textarea></details>';
+  $("#rawThrows").value = R.csvThrows; $("#rawSummary").value = R.csvSummary;
+  window.__lastRun = R;
+}
+
+/* --- saved-data section (editors and owner only) --- */
+var GAS_TEMPLATE = [
+  "function doPost(e) {",
+  "  var KEY = __KEY__;",
+  "  var lock = LockService.getScriptLock();",
+  "  lock.waitLock(20000);",
+  "  try {",
+  "    var d = JSON.parse(e.postData.contents);",
+  "    if (KEY && d.key !== KEY) return ContentService.createTextOutput('denied');",
+  "    var ss = SpreadsheetApp.getActiveSpreadsheet();",
+  "    [['Trial summary', d.summary_header, d.summary_rows],",
+  "     ['Throw log', d.throws_header, d.throws_rows]].forEach(function (t) {",
+  "      var sh = ss.getSheetByName(t[0]) || ss.insertSheet(t[0]);",
+  "      if (sh.getLastRow() === 0) sh.appendRow(t[1]);",
+  "      if (t[2].length) sh.getRange(sh.getLastRow() + 1, 1, t[2].length, t[1].length).setValues(t[2]);",
+  "    });",
+  "    return ContentService.createTextOutput('ok');",
+  "  } finally { lock.releaseLock(); }",
+  "}"
+].join("\n");
+function gasText() { return GAS_TEMPLATE.replace("__KEY__", JSON.stringify(cfg.sheet.key || "")); }
+var dataDb = null, dataCache = null;
+async function initDataSection() {
+  try {
+    var db = await claudeCap("db"), user = await claudeCap("user");
+    if (!db || !user) return;
+    if (!(await user.isOwner()) && !(await user.canEdit())) return;
+    dataDb = db;
+    var sec = $("#dataSec"); if (sec) sec.hidden = false;
+  } catch (e) {}
+}
+async function loadSavedData() {
+  var info = $("#dataInfo"), btns = $("#dataBtns");
+  info.textContent = "Loading\u2026";
+  try {
+    var s = await dataDb.collection("sessions").limit(1000).get();
+    var t = await dataDb.collection("throws").limit(1000).get();
+    var sessions = s.docs.map(function (d) { return d.data(); }).sort(function (a, b) { return String(a.started_at).localeCompare(String(b.started_at)); });
+    var throws = {}; t.docs.forEach(function (d) { var v = d.data(); throws[v.session_id] = v; });
+    dataCache = { sessions: sessions, throws: throws };
+    var real = sessions.filter(function (x) { return x.kind === "participant"; }).length;
+    info.textContent = sessions.length + " session" + (sessions.length === 1 ? "" : "s") + " saved (" + real + " from participant links, " + (sessions.length - real) + " test runs)." + (s.size >= 1000 ? " Showing the first 1000." : "");
+    btns.innerHTML = sessions.length ? '<button type="button" class="btn block" data-act="dl-all-summary" style="margin-top:.75rem">Download all trial summaries (.csv)</button>' +
+      '<button type="button" class="btn block" data-act="dl-all-throws" style="margin-top:.75rem">Download all throw logs (.csv)</button>' : "";
+  } catch (e) { info.textContent = "Couldn\u2019t load saved sessions" + (e && e.code ? " (" + e.code + ")." : "."); }
+}
+function allSummaryCSV() {
+  var rows = [summaryHeader()];
+  dataCache.sessions.forEach(function (x) {
+    summaryRows({ sid: x.session_id, pid: x.participant_id, startedAt: x.started_at, trials: x.trial_summary }).forEach(function (r) { rows.push(r); });
+  });
+  return toCSV(rows);
+}
+function allThrowsCSV() {
+  var rows = [THROW_HEAD];
+  dataCache.sessions.forEach(function (x) {
+    var td = dataCache.throws[x.session_id]; if (!td) return;
+    td.rows.forEach(function (r) {
+      var names = x.trial_summary[r[0] - 1].names, from = r[2], to = r[3];
+      rows.push([x.session_id, x.participant_id, r[0], r[1], from, names[from], to, names[to], from === "you" ? "participant" : "npc", r[4], r[5]]);
+    });
+  });
+  return toCSV(rows);
+}
+function startRun(kind, pid) {
+  run = { kind: kind, sid: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), pid: pid || "", dead: false, pending: null, next: null, throws: [], trials: [], startedAt: new Date().toISOString() };
+  viewIntro();
+}
+async function saveEverywhere0(R, which) {
+  var el = which === "db" ? $("#stDb") : $("#stSheet");
+  el.textContent = "Working\u2026";
+  var r = which === "db" ? await saveToDb(R) : await sendToSheet(R);
+  el.textContent = which === "db" ? dbText(r) : sheetText(r);
+}
+function exitRun() {
+  if (run) { run.dead = true; if (run.pending) { run.pending(null); run.pending = null; } if (run.next) { run.next(); run.next = null; } }
+  viewSetup();
+}
+
+/* ---------- events ---------- */
+function syncRow(i) {
+  var t = cfg.trials[i], row = $('[data-row="' + i + '"]'); if (!row) return;
+  var inYou = $('[data-i="' + i + '"][data-k="toYou"]', row);
+  inYou.max = Math.floor(t.throws / 2);
+  inYou.value = t.toYou;
+  $('[data-i="' + i + '"][data-k="npcs"]', row).value = t.npcs;
+  $('[data-i="' + i + '"][data-k="throws"]', row).value = t.throws;
+}
+function setTrialCount(n) {
+  n = clamp(n, 1, MAX_TRIALS);
+  while (cfg.trials.length < n) cfg.trials.push(JSON.parse(JSON.stringify(cfg.trials[cfg.trials.length - 1])));
+  while (cfg.trials.length > n) cfg.trials.pop();
+  renderTrials(); renderPlayers(); renderPreview(); persist();
+}
+function note(msg) {
+  var n = $("#trialNote"); if (!n) return;
+  if (!note._orig) note._orig = n.textContent;
+  n.textContent = msg || note._orig;
+}
+
+document.addEventListener("click", function (e) {
+  var t = e.target.closest("[data-act],[data-tone],[data-throw]"); if (!t) return;
+
+  if (t.hasAttribute("data-throw")) {
+    if (run && run.pending && !t.disabled) { var r = run.pending; run.pending = null; r(t.getAttribute("data-throw")); }
+    return;
+  }
+  if (t.hasAttribute("data-tone")) {
+    var pr = person(t.getAttribute("data-who"));
+    pr.tone = parseInt(t.getAttribute("data-tone"), 10); pr.photo = null;
+    renderPlayers(); renderPreview(); persist(); return;
+  }
+  var act = t.getAttribute("data-act"), who = t.getAttribute("data-who");
+  switch (act) {
+    case "tdec": setTrialCount(cfg.trials.length - 1); break;
+    case "tinc": setTrialCount(cfg.trials.length + 1); break;
+    case "applyall": {
+      var n = clamp($("#allNpcs").value, MIN_NPC, MAX_NPC), th = clamp($("#allThrows").value, 1, MAX_THROWS);
+      var y = clamp($("#allYou").value, 0, Math.floor(th / 2));
+      cfg.trials = cfg.trials.map(function () { return { npcs: n, throws: th, toYou: y }; });
+      $("#allNpcs").value = n; $("#allThrows").value = th; $("#allYou").value = y;
+      renderTrials(); renderPlayers(); renderPreview(); persist(); note("Applied to all " + cfg.trials.length + " trials."); break;
+    }
+    case "photo": $('[data-file="' + who + '"]').click(); break;
+    case "unphoto": person(who).photo = null; renderPlayers(); renderPreview(); persist(); break;
+    case "test": startRun("preview", "TEST"); break;
+    case "save": saveFile("ball-toss-settings.json", JSON.stringify(cfg, null, 1)); break;
+    case "load": $("#loadfile").click(); break;
+    case "link": {
+      var url = location.href.split("#")[0] + "#run=" + b64enc(JSON.stringify(cfg));
+      $("#linkOut").innerHTML = '<div class="linkrow"><input type="text" id="linkBox" readonly aria-label="Participant link"><button type="button" class="btn" data-act="copylink">Copy</button></div>' +
+        '<p class="hint">Add <code>&amp;pid=ID</code> to the end to record a participant ID. Photos make the link long.</p>';
+      $("#linkBox").value = url; $("#linkBox").select(); break;
+    }
+    case "copylink": {
+      var box = $("#linkBox"); box.select();
+      var done = function () { toast("Link copied"); }, fail = function () { toast("Press and hold the link to copy it."); };
+      try { navigator.clipboard.writeText(box.value).then(done, fail); } catch (err) { fail(); }
+      break;
+    }
+    case "start": {
+      var idBox = $("#pid"); if (idBox) run.pid = idBox.value.trim();
+      runAll(run); break;
+    }
+    case "next": if (run.next) { var nx = run.next; run.next = null; nx(); } break;
+    case "exit": exitRun(); break;
+    case "again": startRun("preview", "TEST"); break;
+    case "dl-throws": saveFile("throw-log.csv", run.csvThrows); break;
+    case "dl-summary": saveFile("trial-summary.csv", run.csvSummary); break;
+    case "savedb": saveEverywhere0(run, "db"); break;
+    case "savesheet": saveEverywhere0(run, "sheet"); break;
+    case "copygas": {
+      var g = $("#gas"); g.select();
+      var okc = function () { toast("Script copied"); }, nok = function () { toast("Press and hold the script to copy it."); };
+      try { navigator.clipboard.writeText(g.value).then(okc, nok); } catch (err2) { nok(); }
+      break;
+    }
+    case "loaddata": loadSavedData(); break;
+    case "dl-all-summary": saveFile("all-trial-summaries.csv", allSummaryCSV()); break;
+    case "dl-all-throws": saveFile("all-throw-logs.csv", allThrowsCSV()); break;
+  }
+});
+
+document.addEventListener("input", function (e) {
+  var t = e.target;
+  if (t.hasAttribute("data-name")) {
+    person(t.getAttribute("data-name")).name = t.value; renderPreview(); persist();
+  } else if (t.id === "tIntro") { cfg.intro = t.value; persist(); }
+  else if (t.id === "tOutro") { cfg.outro = t.value; persist(); }
+});
+
+document.addEventListener("change", function (e) {
+  var t = e.target;
+  if (t.hasAttribute("data-k")) {
+    var i = parseInt(t.getAttribute("data-i"), 10), k = t.getAttribute("data-k"), tr = cfg.trials[i], msg = "";
+    var prevNpcs = tr.npcs;
+    if (k === "npcs") tr.npcs = clamp(t.value, MIN_NPC, MAX_NPC);
+    if (k === "throws") {
+      tr.throws = clamp(t.value, 1, MAX_THROWS);
+      if (tr.toYou > Math.floor(tr.throws / 2)) { tr.toYou = Math.floor(tr.throws / 2); msg = "Trial " + (i + 1) + ": \u201cTo you\u201d lowered to " + tr.toYou + ", the most allowed for " + tr.throws + " throws."; }
+    }
+    if (k === "toYou") {
+      var mx = Math.floor(tr.throws / 2); tr.toYou = clamp(t.value, 0, mx);
+      if (parseInt(t.value, 10) > mx) msg = "Trial " + (i + 1) + ": \u201cTo you\u201d can be at most " + mx + " with " + tr.throws + " throws.";
+    }
+    syncRow(i); note(msg);
+    if (tr.npcs !== prevNpcs) renderPlayers();
+    if (i === 0) renderPreview();
+    persist();
+  } else if (t.id === "tc") { setTrialCount(t.value); }
+  else if (t.id === "pHold") { cfg.pace.holdMs = Math.round(clampF(t.value, 0, 10) * 1000); persist(); }
+  else if (t.id === "pVar") { cfg.pace.varMs = Math.round(clampF(t.value, 0, 5) * 1000); persist(); }
+  else if (t.id === "pFly") { cfg.pace.flightMs = Math.round(clampF(t.value, 0.05, 3) * 1000); persist(); }
+  else if (t.id === "showCounts") { cfg.showCounts = t.checked; persist(); }
+  else if (t.id === "sUrl") {
+    var uv = t.value.trim();
+    if (!uv || SHEET_URL_RE.test(uv)) { cfg.sheet.url = uv; persist(); }
+    else { toast("That doesn\u2019t look like an Apps Script web app URL. It should end in /exec."); }
+  }
+  else if (t.id === "sKey") { cfg.sheet.key = t.value.slice(0, 60); $("#gas").value = gasText(); persist(); }
+  else if (t.hasAttribute("data-file")) {
+    var f = t.files && t.files[0]; if (!f) return;
+    var w = t.getAttribute("data-file");
+    fileToAvatar(f).then(function (url) { person(w).photo = url; renderPlayers(); renderPreview(); persist(); })
+      .catch(function () { toast("Couldn\u2019t read that image. Try a JPG or PNG."); });
+  } else if (t.id === "loadfile") {
+    var lf = t.files && t.files[0]; if (!lf) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      try { cfg = normalizeCfg(JSON.parse(fr.result)); persist(); viewSetup(); toast("Settings loaded"); }
+      catch (err) { toast("That file isn\u2019t a valid settings file."); }
+    };
+    fr.readAsText(lf); t.value = "";
+  }
+});
+
+/* ---------- start ---------- */
+if (fromHash) startRun("participant", fromHash.pid || ""); else viewSetup();
+})();
+</script>
+</body>
+</html>
