@@ -276,6 +276,7 @@ var SHAPES = BT.SHAPES;
 var MAX_NPC = 5, MIN_NPC = 2, MAX_TRIALS = 30, MAX_THROWS = 60;
 var STORE_KEY = "balltoss.cfg.v2";
 var CODE_LIMIT = 20000;
+var SHEET_URL_RE = /^https:\/\/script\.google\.com\/(a\/[\w.-]+\/)?macros\/s\/[\w-]+\/exec$/;
 
 function $(s, root) { return (root || document).querySelector(s); }
 function $$(s, root) { return Array.prototype.slice.call((root || document).querySelectorAll(s)); }
@@ -381,7 +382,8 @@ function defaultCfg() {
     pace: { holdMs: 1200, varMs: 400, flightMs: 700 },
     showCounts: true,
     presentation: { identity: true, queue: true, sound: true, progress: false },
-    qualtrics: { study: "study-1", pidPipe: pipe(), advanceSec: 2, mode: "inline", hostUrl: "" }
+    qualtrics: { study: "study-1", pidPipe: pipe(), advanceSec: 2, mode: "inline", hostUrl: "" },
+    backup: { url: "", key: "" }
   };
 }
 function cleanPerson(src, base) {
@@ -438,6 +440,11 @@ function normalizeCfg(c) {
     if (c.qualtrics.advanceSec != null) d.qualtrics.advanceSec = clampF(c.qualtrics.advanceSec, 0, 60);
     if (c.qualtrics.mode === "hosted" || c.qualtrics.mode === "inline") d.qualtrics.mode = c.qualtrics.mode;
     if (typeof c.qualtrics.hostUrl === "string" && /^https:\/\//.test(c.qualtrics.hostUrl.trim())) d.qualtrics.hostUrl = c.qualtrics.hostUrl.trim().slice(0, 200);
+  }
+  if (c.backup && typeof c.backup === "object") {
+    var bu = typeof c.backup.url === "string" ? c.backup.url.trim().slice(0, 400) : "";
+    d.backup.url = SHEET_URL_RE.test(bu) ? bu : "";
+    d.backup.key = typeof c.backup.key === "string" ? c.backup.key.slice(0, 60) : "";
   }
   return d;
 }
@@ -559,6 +566,39 @@ function renderPlayers() {
 
 /* ---------- Qualtrics code (one per trial) ---------- */
 function runtimeSrc() { var el = $("#bt-runtime"); return el ? el.textContent.trim() : ""; }
+function backupSnippet(i) {
+  if (!cfg.backup.url) return "";
+  return "        try { fetch(" + JSON.stringify(cfg.backup.url) +
+    ", { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ key: " +
+    JSON.stringify(cfg.backup.key) + ", trial: " + (i + 1) + ", name: " + JSON.stringify(tname(i)) + ", value: val }) }); } catch (e2) {}\n";
+}
+function hostedBackupSnippet(i) {
+  if (!cfg.backup.url) return "";
+  return "      try { fetch(" + JSON.stringify(cfg.backup.url) +
+    ", { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ key: " +
+    JSON.stringify(cfg.backup.key) + ", trial: " + (i + 1) + ", name: " + JSON.stringify(tname(i)) + ", value: m.value }) }); } catch (e2) {}";
+}
+var BACKUP_GAS = [
+  "function doPost(e) {",
+  "  var KEY = __KEY__;",
+  "  var lock = LockService.getScriptLock();",
+  "  lock.waitLock(20000);",
+  "  try {",
+  "    var d = JSON.parse(e.postData.contents);",
+  "    if (KEY && d.key !== KEY) return ContentService.createTextOutput('denied');",
+  "    var v = JSON.parse(d.value);",
+  "    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Responses') || SpreadsheetApp.getActiveSpreadsheet().insertSheet('Responses');",
+  "    var head = ['timestamp','trial_number','trial_name','participant_id','study','npcs','total_throws','planned_to_you','received_you',",
+  "      'passes_you','npc_to_npc_passes','npc_to_you_passes','you_to_npc_passes','balance_on','block_events','overrides','full_json'];",
+  "    if (sh.getLastRow() === 0) sh.appendRow(head);",
+  "    sh.appendRow([new Date(), d.trial, d.name, v.pid || '', v.study || '', v.npcs, v.total, v.planned_to_you, v.received.you,",
+  "      v.passes.you, v.npc_to_npc, v.npc_to_you, v.you_to_npc, v.balance, v.block_events, v.overrides, d.value]);",
+  "    return ContentService.createTextOutput('ok');",
+  "  } finally { lock.releaseLock(); }",
+  "}"
+].join("\n");
+function backupGasText() { return BACKUP_GAS.replace("__KEY__", JSON.stringify(cfg.backup.key || "")); }
+
 function trialCode(i) {
   var src = runtimeSrc(); if (!src) return "";
   var q = cfg.qualtrics, ms = Math.round(q.advanceSec * 1000);
@@ -570,7 +610,13 @@ function trialCode(i) {
     "  q.getQuestionContainer().appendChild(h);\n" +
     "  function advance() { setTimeout(function () { q.clickNextButton(); }, " + ms + "); }\n" +
     "  BT.play(h, TRIAL).then(function (r) {\n" +
-    "    try { if (r) Qualtrics.SurveyEngine.setEmbeddedData('bt_t" + (i + 1) + "', JSON.stringify(BT.pack(r, { study: " + JSON.stringify(q.study) + ", pid: " + JSON.stringify(q.pidPipe) + " }))); } catch (e) {}\n" +
+    "    try {\n" +
+    "      if (r) {\n" +
+    "        var val = JSON.stringify(BT.pack(r, { study: " + JSON.stringify(q.study) + ", pid: " + JSON.stringify(q.pidPipe) + " }));\n" +
+    "        Qualtrics.SurveyEngine.setEmbeddedData('bt_t" + (i + 1) + "', val);\n" +
+    (backupSnippet(i)) +
+    "      }\n" +
+    "    } catch (e) {}\n" +
     "    advance();\n" +
     "  }).catch(advance);\n" +
     "});\n" +
@@ -601,7 +647,10 @@ function hostedCode(i) {
     "    if (m.bt_resize) { f.style.height = (m.bt_resize + 4) + 'px'; return; }",
     "    if (!m.bt_done || m.field !== 'bt_t" + (i + 1) + "') return;",
     "    window.removeEventListener('message', onMsg);",
-    "    try { Qualtrics.SurveyEngine.setEmbeddedData(m.field, m.value); } catch (e) {}",
+    "    try {",
+    "      Qualtrics.SurveyEngine.setEmbeddedData(m.field, m.value);",
+    (hostedBackupSnippet(i)),
+    "    } catch (e) {}",
     "    setTimeout(function () { q.clickNextButton(); }, " + ms + ");",
     "  }",
     "  window.addEventListener('message', onMsg);",
@@ -696,6 +745,16 @@ function viewSetup() {
     '<div id="qFallback"></div>' +
     '<p class="hint" id="qLimits"></p></section>' +
 
+    '<section><h2>Backup save (optional)</h2>' +
+    '<div class="field" style="margin-top:0"><label for="bkUrl">Google Sheet web app URL</label>' +
+    '<input id="bkUrl" type="text" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/\u2026/exec" value="' + esc(cfg.backup.url) + '"></div>' +
+    '<div class="field"><label for="bkKey">Shared key (optional)</label>' +
+    '<input id="bkKey" type="text" maxlength="60" autocomplete="off" value="' + esc(cfg.backup.key) + '"></div>' +
+    '<details><summary>Apps Script to paste into the sheet</summary>' +
+    '<textarea class="raw" id="bkGas" readonly></textarea>' +
+    '<button type="button" class="btn small" data-act="copybackup" style="margin-top:.5rem">Copy script</button></details>' +
+    '<p class="hint">Extensions \u203a Apps Script in your sheet, paste this in, then Deploy \u203a New deployment \u203a Web app (access: Anyone). Every trial posts a row here the instant it finishes, independent of Qualtrics.</p></section>' +
+
     '<section><h2>Convert Qualtrics data</h2>' +
     '<label class="check"><input type="checkbox" id="cvPreview"> Include survey previews</label>' +
     '<button type="button" class="btn block" data-act="convpick">Choose Qualtrics CSV</button>' +
@@ -707,6 +766,7 @@ function viewSetup() {
     '<div class="actions"><button type="button" class="btn block" data-act="loaddata">Load saved sessions</button>' +
     '<div id="dataBtns"></div></div></section>';
   renderPreview(); renderTrials(); renderPlayers(); renderQUI();
+  $("#bkGas").value = backupGasText();
   initDataSection();
 }
 
@@ -770,6 +830,14 @@ function viewBetween(R, ti) {
     R.next = res;
   });
 }
+function sendBackupNow(res) {
+  if (!cfg.backup.url) return Promise.resolve({ sent: false, reason: "no-url" });
+  var value = JSON.stringify(BT.pack(res, { study: cfg.qualtrics.study, pid: "TEST" }));
+  return fetch(cfg.backup.url, {
+    method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ key: cfg.backup.key, trial: res.trial, name: res.name || "", value: value })
+  }).then(function () { return { sent: true }; }, function (e) { return { sent: false, reason: String(e) }; });
+}
 function addResult(R, res) {
   R.raw.push(res);
   var t = Object.assign({}, res); delete t.throws;
@@ -783,6 +851,8 @@ function addResult(R, res) {
       blocked_npcs: (e.blocked || []).join("|")
     });
   });
+  if (!R.backups) R.backups = [];
+  R.backups.push(sendBackupNow(res).then(function (r) { r.trial = res.trial; return r; }));
 }
 async function runAll(R) {
   for (var k = 0; k < R.idxs.length; k++) {
@@ -963,7 +1033,8 @@ function finishRun(R) {
 
     '<h2 style="margin-top:1.5rem">Save this test run</h2>' +
 
-    '<ul class="status-list"><li><b>Game database:</b> <span id="stDb">Not saved yet.</span></li></ul>' +
+    '<ul class="status-list"><li><b>Game database:</b> <span id="stDb">Not saved yet.</span></li>' +
+    '<li><b>Backup Sheet:</b> <span id="stBackup">' + (cfg.backup.url ? "Sending\u2026" : "No Sheet URL set up.") + '</span></li></ul>' +
     '<div class="actions" style="margin-top:1rem"><button type="button" class="btn block" data-act="savedb">Save to game database</button>' +
     '<button type="button" class="btn primary block" data-act="dl-throws">Download throw log (.csv)</button>' +
     '<button type="button" class="btn block" data-act="dl-summary">Download trial summary (.csv)</button>' +
@@ -978,6 +1049,15 @@ function finishRun(R) {
   $("#rawThrows").value = R.csvThrows; $("#rawSummary").value = R.csvSummary; $("#rawPairs").value = R.csvPairs;
   $("#rawQ").value = JSON.stringify(fields, null, 1);
   window.__lastRun = R; window.__lastFields = fields;
+  if (cfg.backup.url) {
+    Promise.all(R.backups || []).then(function (results) {
+      var el = $("#stBackup"); if (!el) return;
+      var ok = results.filter(function (r) { return r.sent; }).length, n = results.length;
+      el.textContent = n === 0 ? "Nothing to send." :
+        ok === n ? (n + " of " + n + " trial" + (n === 1 ? "" : "s") + " sent. Check the sheet \u2014 a browser can\u2019t confirm Google actually wrote the row.") :
+        (ok + " of " + n + " sent; " + (n - ok) + " failed to even reach Google (network/URL problem).");
+    });
+  }
 }
 
 /* ---------- game database (claude.ai only) ---------- */
@@ -1223,6 +1303,7 @@ document.addEventListener("click", function (e) {
       copyText(code, "Trial " + (ti + 1) + " code"); break;
     }
     case "copyfields": copyText(fieldNames().join("\n"), "Field names"); break;
+    case "copybackup": copyText($("#bkGas").value, "Backup script"); break;
     case "save": saveFile("ball-toss-settings.json", JSON.stringify(cfg, null, 1)); break;
     case "load": $("#loadfile").click(); break;
     case "next": if (run && run.next) { var nx = run.next; run.next = null; nx(); } break;
@@ -1292,6 +1373,12 @@ document.addEventListener("change", function (e) {
     else toast("The address should start with https://");
   }
   else if (t.id === "qSec") { cfg.qualtrics.advanceSec = clampF(t.value, 0, 60); t.value = cfg.qualtrics.advanceSec; persist(); }
+  else if (t.id === "bkUrl") {
+    var bv = t.value.trim();
+    if (!bv || SHEET_URL_RE.test(bv)) { cfg.backup.url = bv; renderTrialCodes(); persist(); }
+    else toast("That doesn\u2019t look like an Apps Script web app URL. It should end in /exec.");
+  }
+  else if (t.id === "bkKey") { cfg.backup.key = t.value.slice(0, 60); $("#bkGas").value = backupGasText(); persist(); }
   else if (t.hasAttribute("data-file")) {
     var f = t.files && t.files[0]; if (!f) return;
     var w = t.getAttribute("data-file");
