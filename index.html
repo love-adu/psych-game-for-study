@@ -568,11 +568,11 @@ function trialCode(i) {
     "  var q = this, h = document.createElement('div');\n" +
     "  h.style.cssText = 'max-width:640px;margin:0 auto';\n" +
     "  q.getQuestionContainer().appendChild(h);\n" +
+    "  function advance() { setTimeout(function () { q.clickNextButton(); }, " + ms + "); }\n" +
     "  BT.play(h, TRIAL).then(function (r) {\n" +
-    "    if (!r) return;\n" +
-    "    Qualtrics.SurveyEngine.setEmbeddedData('bt_t" + (i + 1) + "', JSON.stringify(BT.pack(r, { study: " + JSON.stringify(q.study) + ", pid: " + JSON.stringify(q.pidPipe) + " })));\n" +
-    "    setTimeout(function () { q.clickNextButton(); }, " + ms + ");\n" +
-    "  });\n" +
+    "    try { if (r) Qualtrics.SurveyEngine.setEmbeddedData('bt_t" + (i + 1) + "', JSON.stringify(BT.pack(r, { study: " + JSON.stringify(q.study) + ", pid: " + JSON.stringify(q.pidPipe) + " }))); } catch (e) {}\n" +
+    "    advance();\n" +
+    "  }).catch(advance);\n" +
     "});\n" +
     "/* END OF CODE. If you can\u2019t see this line at the very bottom, the paste was cut off. */\n";
 }
@@ -601,7 +601,7 @@ function hostedCode(i) {
     "    if (m.bt_resize) { f.style.height = (m.bt_resize + 4) + 'px'; return; }",
     "    if (!m.bt_done || m.field !== 'bt_t" + (i + 1) + "') return;",
     "    window.removeEventListener('message', onMsg);",
-    "    Qualtrics.SurveyEngine.setEmbeddedData(m.field, m.value);",
+    "    try { Qualtrics.SurveyEngine.setEmbeddedData(m.field, m.value); } catch (e) {}",
     "    setTimeout(function () { q.clickNextButton(); }, " + ms + ");",
     "  }",
     "  window.addEventListener('message', onMsg);",
