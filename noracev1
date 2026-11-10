@@ -181,11 +181,13 @@ function A(){d(880,.06,"square",.05)}var M="bt_id_"+(p.study||""),k=null;if(p.id
 var D=sessionStorage.getItem(M);D&&(k=JSON.parse(D))}catch(t){}if(!k){
 if(k=await new Promise(function(n){
 var l=(p.you.name||"You").slice(0,24),c=p.you.tone,u=o.indexOf(p.you.shape)>=0?p.you.shape:"circle"
-;function d(){var t=h.querySelector("[data-nm]");t&&(l=t.value)}function f(){
-h.innerHTML="<style>"+a+r+'</style><div class="w"><p class="st">Before you begin, choose how you’ll appear to the other players.</p><div class="pvbox">'+s({
+;function d(){var t=h.querySelector("[data-nm]");t&&(l=t.value)}function f(){var n=e
+;h.innerHTML="<style>"+a+r+'</style><div class="w"><p class="st">Before you begin, choose how you’ll appear to the other players.</p><div class="pvbox">'+s({
 tone:c,shape:u
 })+'</div><input class="ni" data-nm maxlength="24" placeholder="Your name" value="'+i(l)+'" aria-label="Your name"><div class="op" role="group" aria-label="Shape">'+o.map(function(t){
 return'<button type="button" class="sb'+(t===u?" on":"")+'" data-sh="'+t+'" aria-pressed="'+(t===u)+'">'+t+"</button>"
+}).join("")+'</div><div class="op" role="group" aria-label="Color">'+n.map(function(t,e){
+return'<button type="button" class="tbn'+(e===c?" on":"")+'" style="background:'+t+'" data-tn="'+e+'" aria-pressed="'+(e===c)+'" aria-label="Color '+(e+1)+" of "+n.length+'"></button>'
 }).join("")+'</div><button type="button" class="gob" data-go>Continue</button></div>'}f(),
 g=function(o){
 var a=o.target.closest("[data-sh]"),r=o.target.closest("[data-tn]"),i=o.target.closest("[data-go]")
@@ -531,12 +533,17 @@ function renderPlayers() {
       return '<button type="button" class="shb' + (!p.photo && p.shape === sh ? " on" : "") + '" data-shape="' + sh + '" data-who="' + who +
         '" aria-pressed="' + (!p.photo && p.shape === sh) + '">' + sh + '</button>';
     }).join("");
+    var sws = BT.COLORS.map(function (c, ti) {
+      return '<button type="button" class="sw" style="background:' + c + '" data-tone="' + ti + '" data-who="' + who +
+        '" aria-pressed="' + (!p.photo && p.tone === ti) + '" aria-label="' + title + ' color ' + (ti + 1) + ' of ' + BT.COLORS.length + '"></button>';
+    }).join("");
     return '<div class="pc" data-card="' + who + '">' +
       '<div class="pav">' + BT.avatar(p) + '</div>' +
       '<div class="pf"><label for="nm-' + who + '">' + title + ' name</label>' +
       '<input id="nm-' + who + '" type="text" maxlength="24" data-name="' + who + '" value="' + esc(p.name) + '">' +
       (note ? '<span class="note">' + note + '</span>' : "") + '</div>' +
       '<div class="pt"><div class="shapes" role="group" aria-label="' + title + ' avatar shape">' + shp + '</div>' +
+      '<div class="sws" role="group" aria-label="' + title + ' color">' + sws + '</div>' +
       '<div class="pbtns"><button type="button" class="btn small" data-act="photo" data-who="' + who + '">Upload photo</button>' +
       (p.photo ? '<button type="button" class="btn small" data-act="unphoto" data-who="' + who + '">Remove photo</button><span class="note">Photo in use</span>' : "") +
       '<input type="file" accept="image/*" hidden data-file="' + who + '"></div></div></div>';
@@ -727,7 +734,7 @@ function viewSetup() {
     '</section>' +
 
     '<section><h2>Presentation</h2>' +
-    '<label class="check"><input type="checkbox" id="pIdentity"' + (cfg.presentation.identity ? " checked" : "") + '> Participants pick their own name and shape</label>' +
+    '<label class="check"><input type="checkbox" id="pIdentity"' + (cfg.presentation.identity ? " checked" : "") + '> Participants pick their own name, shape and color</label>' +
     '<label class="check"><input type="checkbox" id="pQueue"' + (cfg.presentation.queue ? " checked" : "") + '> Show players arriving + a Ready to Play button</label>' +
     '<label class="check"><input type="checkbox" id="pSound"' + (cfg.presentation.sound ? " checked" : "") + '> Sound effects</label>' +
     '<label class="check"><input type="checkbox" id="pProgress"' + (cfg.presentation.progress ? " checked" : "") + '> Show participants \u201cTrial X of Y\u201d</label></section>' +
